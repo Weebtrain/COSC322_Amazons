@@ -25,7 +25,7 @@ public class HumanPlayer implements Runnable{
         gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
     }
 
-    boolean checkStringSyntax (String moveString) {
+    boolean checkStringSyntax (String moveString) { //L##L##L##
         if (moveString.length() > 9) {
             return false;
         } else {
