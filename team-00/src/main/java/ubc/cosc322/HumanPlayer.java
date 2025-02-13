@@ -31,23 +31,32 @@ public class HumanPlayer implements Runnable{
         } else {
             for (int i = 0; i<moveString.length(); i++) {
                 System.out.println(moveString.charAt(i) + " " + i);
-                if (i == 0) {
-                    if (!(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= 'i')) {
-                        System.out.println("Invalid Move");
+                
+                if(i == 0){
+                    if(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= i){
+                        System.out.println("Valid Move");
+                        return true;
+                    } else{
+                        System.out.println("invalid move");
                         return false;
                     }
-                } else {
-                    if (moveString.charAt(i-1) >= 'a' && moveString.charAt(i-1) <= 'i') {
-                        if (!(moveString.charAt(i) >= '0' && moveString.charAt(i) <= '9')) {
+                } else{
+                    if(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= i){
+                        System.out.println("Valid Move");
+                        return true;
+                    } else if(moveString.charAt(i) >= 0 || moveString.charAt(i) == 1){
+                        if(moveString.charAt(i+1) == 0){
+                            System.out.println("Valid Move at 10");
+                            return true;
+                        } else if(moveString.charAt(i+1) >= 0){
                             System.out.println("Invalid Move");
                             return false;
-                        }
-                    } else {
-                        if (!(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= 'i') || !(moveString.charAt(i-1) == '1' && moveString.charAt(i) == '0')) {
-                            System.out.println("Invalid Move");
-                            return false;
+                        }else{
+                        System.out.println("Valid Move");
+                        return true;
                         }
                     }
+
                 }
             }
         }
