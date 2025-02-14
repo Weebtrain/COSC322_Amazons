@@ -34,33 +34,33 @@ public class HumanPlayer implements Runnable{
                 
                 if(i == 0){
                     if(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= i){
-                        System.out.println("Valid Move");
-                        return true;
+                        System.out.println("Valid Move, this is line 37");
+                        
                     } else{
-                        System.out.println("invalid move");
-                        return false;
+                        System.out.println("invalid move, this is line 40");
+                        System.out.println("IT IS I " + moveString.charAt(i));
+                        
                     }
                 } else{
                     if(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= i){
-                        System.out.println("Valid Move");
-                        return true;
+                        System.out.println("Valid Move , this is line 45");
+                        
                     } else if(moveString.charAt(i) >= 0 || moveString.charAt(i) == 1){
                         if(moveString.charAt(i+1) == 0){
-                            System.out.println("Valid Move at 10");
-                            return true;
+                            System.out.println("Valid Move, this is line 49");
                         } else if(moveString.charAt(i+1) >= 0){
-                            System.out.println("Invalid Move");
-                            return false;
+                            System.out.println("Invalid Move, this is line 52" + " "+ moveString.charAt(i));
+                            if(moveString.charAt(i) == moveString.charAt(i)){
+                                System.out.println("IT IS I " + moveString.charAt(i));
+                            }
                         }else{
-                        System.out.println("Valid Move");
-                        return true;
+                        System.out.println("Valid Move, this is line 55");
                         }
                     }
 
                 }
             }
         }
-
         return true;
     }
 
