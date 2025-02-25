@@ -9,11 +9,12 @@ public class HumanPlayer implements Runnable{
     //private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
     private int[][] gameBoard = null;
-    final private int queenIdentity = 2;
+    private int queenIdentity = 2;
 
-    HumanPlayer (GameClient client, int[][] curBoard) {
+    HumanPlayer (GameClient client, int[][] curBoard, int queenId) {
         this.gameClient = client;
         this.gameBoard = curBoard;
+        this.queenIdentity = queenId;
     }
 
     @Override
@@ -74,8 +75,8 @@ public class HumanPlayer implements Runnable{
                 end++;
             }
             locations = moveString.substring(start, end);
-            arrayOfMoveStatements[i][0] = (int)(locations.charAt(0) - 'a') + 1;
-            arrayOfMoveStatements[i][1] = Integer.parseInt(locations.substring(1));
+            arrayOfMoveStatements[i][1] = (int)(locations.charAt(0) - 'a') + 1;
+            arrayOfMoveStatements[i][0] = Integer.parseInt(locations.substring(1));
             start = end;
             end++;
         }
@@ -111,14 +112,14 @@ public class HumanPlayer implements Runnable{
             return false;
         } else if (start[0] == end[0]) {
             for (int i = start[1]; i != end[1]; i -= (start[1]-end[1])/Math.abs(start[1]-end[1])) {
-                if (gameBoard[start[0]-1][i-1] == 3) {
+                if (gameBoard[start[0]-1][i-1] != 0) {
                     return false;
                 }
             }
             return true;
         } else if (start[1] == end[1]) {
             for (int i = start[0]; i != end[0]; i -= (start[0]-end[0])/Math.abs(start[0]-end[0])) {
-                if (gameBoard[i-1][start[1]-1] == 3) {
+                if (gameBoard[i-1][start[1]-1] != 0) {
                     return false;
                 }
             }
@@ -128,7 +129,7 @@ public class HumanPlayer implements Runnable{
             int xDirection = (start[0]-end[0])/Math.abs(start[0]-end[0]), yDirection = (start[1]-end[1])/Math.abs(start[1]-end[1]);
             int distance = start[0] - end[0];
             for (int i = 1; i<distance; i++) {
-                if (gameBoard[start[0] + i*xDirection - 1][start[1] + i*yDirection - 1] == 3) {
+                if (gameBoard[start[0] + i*xDirection - 1][start[1] + i*yDirection - 1] != 0) {
                     return false;
                 }
             }

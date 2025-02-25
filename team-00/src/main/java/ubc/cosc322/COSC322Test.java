@@ -26,14 +26,14 @@ public class COSC322Test extends GamePlayer{
     private String userName = null;
     private String passwd = null;
  
-	final private int queenIdentity = 2;
+	private int queenIdentity = 2;
 	private int[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
     /**
      * The main method
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
+    	COSC322Test player = new COSC322Test("WeebTrain2", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
@@ -91,21 +91,22 @@ public class COSC322Test extends GamePlayer{
 		//Message recieved when game starts
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_START)) {
 			if (((String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)).equals(userName)) {
+				queenIdentity = 2;
 				//Starts a human player or the ai depending on indication
 				if (humanPlay == true) {
-					Thread H = new Thread(new HumanPlayer(gameClient,gameState));
+					Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
 					H.start();
 				} else {
 					//run ai
 				}
-			}
+			} else queenIdentity = 1;
 		}
 		//Message recieved when opponent makes a move
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_MOVE)) {
 			gamegui.updateGameState(msgDetails);
 			updateGameState(msgDetails);
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState));
+				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
 				H.start();
 			} else {
 				//run ai
@@ -143,7 +144,7 @@ public class COSC322Test extends GamePlayer{
 		gameState = new int[10][10];
 		for (int i = 1; i<11;i++) {
 			for (int j = 1; j<11; j++) {
-				gameState[i-1][j-1] = board.get((i*11)+j);
+				gameState[j-1][i-1] = board.get((i*11)+j);
 			}
 		}
 	}
