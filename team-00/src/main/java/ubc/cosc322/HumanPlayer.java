@@ -9,12 +9,13 @@ public class HumanPlayer implements Runnable{
     //private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
     private int[][] gameBoard = null;
-    private int queenIdentity = 2;
+    private int queenIdentity;
 
     HumanPlayer (GameClient client, int[][] curBoard, int queenId) {
         this.gameClient = client;
         this.gameBoard = curBoard;
         this.queenIdentity = queenId;
+        System.out.print(queenIdentity);
     }
 
     @Override
