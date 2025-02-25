@@ -58,20 +58,22 @@ public class HumanPlayer implements Runnable{
         return true;
     }
 
-    //To be fixed
+
     int[][] convertToMove (String moveString) {
+        char[] moveCharArray = moveString.toCharArray();
         int[][] arrayOfMoveStatements = new int[3][2];
-        String[] locations = new String[3];
+        String locations;
         int start = 0, end = 1;
-        for (int i = 0; i<locations.length;i++) {
-            while (!(moveString.charAt(end) >= 'a' && moveString.charAt(end) <= 'i')) { 
+        for (int i = 0; i<3;i++) {
+            while (end<moveCharArray.length && !(moveCharArray[end] >= 'a' && moveCharArray[end] <= 'i')) { 
                 end++;
             }
-            locations[i] = moveString.substring(start, end);
-            arrayOfMoveStatements[i][0] = (int)(locations[i].charAt(0) - 'a') + 1;
-            arrayOfMoveStatements[i][1] = Integer.parseInt(locations[i].substring(1));
+            locations = moveString.substring(start, end);
+            arrayOfMoveStatements[i][0] = (int)(locations.charAt(0) - 'a') + 1;
+            arrayOfMoveStatements[i][1] = Integer.parseInt(locations.substring(1));
+            start = end;
+            end++;
         }
-        
         return arrayOfMoveStatements;
     }
 

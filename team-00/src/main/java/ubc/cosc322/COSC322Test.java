@@ -18,7 +18,7 @@ import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
  *
  */
 public class COSC322Test extends GamePlayer{
-	private boolean humanPlay = true;
+	final private boolean humanPlay = true;
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
