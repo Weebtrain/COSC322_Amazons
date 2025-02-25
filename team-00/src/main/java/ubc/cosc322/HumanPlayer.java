@@ -8,21 +8,26 @@ import ygraph.ai.smartfox.games.GameClient;
 public class HumanPlayer implements Runnable{
     //private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
+    private int[][] gameBoard = null;
+    private int queenIdentity = 2;
 
-    HumanPlayer (GameClient client) {
+    HumanPlayer (GameClient client, int[][] curBoard) {
         this.gameClient = client;
+        this.gameBoard = curBoard;
     }
 
+    @Override
     public void run() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         String move;
+        int[][] moveInt = null;
         do {
-            System.out.print("Enter move: ");
+            System.out.print("\nEnter move: ");
             move = myObj.nextLine();  // Read user input
-            //move = move.toLowerCase();
-        } while (!checkStringSyntax(move));
-        int[][] moveInt = convertToMove(move);
-        //check move validity
+            move = move.toLowerCase();
+            moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
+        } while (moveInt == null);
+        System.out.println("Sending Move");
         gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
     }
 
@@ -77,8 +82,67 @@ public class HumanPlayer implements Runnable{
         return arrayOfMoveStatements;
     }
 
+    int[][] checkMove (String moveString) {
+        if (!(checkStringSyntax(moveString))) { //checks if string syntax is correct
+            return null;
+        }
+        System.out.println("Syntax passed");
+        int[][] tempMoves = convertToMove(moveString);  //converts string into integer arrays of x and y positions
+        System.out.println("Move conversion passed");
+        if (!(checkMoveValidity(tempMoves))) {  //checks if moves are valid (queen selection, queen move and arrow fire)
+            return null;
+        }
+        System.out.println("Move Valid passed");
+        return tempMoves;
+    }
+
+    boolean checkMoveValidity (int[][] moves) {
+        if(!ensureQueenPosition(moves[0])) return false;    //Checks your queen is selected
+        System.out.println("Queen Position Valid");
+        if(!ensureValidDirection(moves[0], moves[1])) return false; //checks the queen can move there
+        System.out.println("Queen Move Valid");
+        if(!ensureValidDirection(moves[1], moves[2])) return false; //checks the queen can shoot from move
+        System.out.println("Queen Shot Valid");
+        return true;
+    }
+
+    boolean ensureValidDirection (int[] start, int[] end) {
+        if (start.equals(end) || gameBoard[end[0]-1][end[1]-1] == 3) {
+            return false;
+        } else if (start[0] == end[0]) {
+            for (int i = start[1]; i != end[1]; i -= (start[1]-end[1])/Math.abs(start[1]-end[1])) {
+                if (gameBoard[start[0]-1][i-1] == 3) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (start[1] == end[1]) {
+            for (int i = start[0]; i != end[0]; i -= (start[0]-end[0])/Math.abs(start[0]-end[0])) {
+                if (gameBoard[i-1][start[1]-1] == 3) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (Math.abs(start[0] - end[0]) == Math.abs(start[1] - end[1])) {
+            //Checks if directions are positive or negative to look for barricades
+            int xDirection = (start[0]-end[0])/Math.abs(start[0]-end[0]), yDirection = (start[1]-end[1])/Math.abs(start[1]-end[1]);
+            int distance = start[0] - end[0];
+            for (int i = 1; i<distance; i++) {
+                if (gameBoard[start[0] + i*xDirection - 1][start[1] + i*yDirection - 1] == 3) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    boolean ensureQueenPosition (int[] position) {
+        return gameBoard[position[0] - 1][position[1] - 1] == queenIdentity;
+    }
+
     ArrayList<Integer> arrayToArrayList (int[] array) {
-        ArrayList<Integer> returnList = new ArrayList<Integer>(2);
+        ArrayList<Integer> returnList = new ArrayList<>(2);
         returnList.add(0, array[0]);
         returnList.add(1, array[1]);
         return returnList;

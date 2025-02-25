@@ -18,7 +18,7 @@ import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
  *
  */
 public class COSC322Test extends GamePlayer{
-	final private boolean humanPlay = true;
+	final private boolean humanPlay = true;	//sets human player or ai to run
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
@@ -26,19 +26,20 @@ public class COSC322Test extends GamePlayer{
     private String userName = null;
     private String passwd = null;
  
-	private ArrayList<Integer> gameState = null;
+	private int[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
     /**
      * The main method
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");
+    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
     	else {
     		BaseGameGUI.sys_setup();
             java.awt.EventQueue.invokeLater(new Runnable() {
+				@Override
                 public void run() {
                 	player.Go();
                 }
@@ -64,9 +65,8 @@ public class COSC322Test extends GamePlayer{
 
     @Override
     public void onLogin() {
-		int index = 14;
+		int index = 14;	//Room index
 		List<Room> rooms = gameClient.getRoomList();
-		//gameClient.joinRoom(rooms.get(index).getName());
 		gameClient.joinRoom(rooms.get(index).getName());
 
     	userName = gameClient.getUserName();
@@ -81,13 +81,21 @@ public class COSC322Test extends GamePlayer{
     	//from the server.
     	//For a detailed description of the message types and format, 
     	//see the method GamePlayer.handleGameMessage() in the game-client-api document. 
+
+		//Message on entering the room that gives board state
 		if (messageType.equals(AmazonsGameMessage.GAME_STATE_BOARD)) {
-			gamegui.setGameState((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
-			System.out.println(msgDetails.get(AmazonsGameMessage.GAME_STATE).toString());
-			gameState = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE);
-			Thread H = new Thread(new HumanPlayer(gameClient));
-			H.start();
+			//Sets up gui and our board matrix
+			this.initializeGameBoard((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
+
+			//Starts a human player or the ai depending on indication
+			if (humanPlay == true) {
+				Thread H = new Thread(new HumanPlayer(gameClient,gameState));
+				H.start();
+			} else {
+				//run ai
+			}
 		}
+		//Message recieved when opponent makes a move
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_MOVE)) {
 			gamegui.updateGameState(msgDetails);
 		}
@@ -117,7 +125,22 @@ public class COSC322Test extends GamePlayer{
     	gameClient = new GameClient(userName, passwd, this);			
 	}
 
+	//Initializes board state to 10x10 integer matrix for use, also initializes gamegui
+	void initializeGameBoard (ArrayList<Integer> board) {
+		gamegui.setGameState(board);
+		gameState = new int[10][10];
+		for (int i = 1; i<11;i++) {
+			for (int j = 1; j<11; j++) {
+				gameState[i-1][j-1] = board.get((i*11)+j);
+			}
+		}
+	}
+
+	//Updates board matrix
 	void updateGameState (Map<String, Object> msgDetails) {
+
+	}
+	void updateGameState (int[][] moveMade) {
 
 	}
  
