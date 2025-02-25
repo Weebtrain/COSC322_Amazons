@@ -26,43 +26,72 @@ public class HumanPlayer implements Runnable{
     }
 
     boolean checkStringSyntax (String moveString) { //L##L##L##
+        //converting move string to array
+        char[] Characters = moveString.toCharArray();
+
         if (moveString.length() > 9) {
             return false;
         } else {
-            for (int i = 0; i<moveString.length(); i++) {
-                System.out.println(moveString.charAt(i) + " " + i);
-                
-                if(i == 0){
-                    if(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= i){
-                        System.out.println("Valid Move, this is line 37");
-                        
-                    } else{
-                        System.out.println("invalid move, this is line 40");
-                        System.out.println("IT IS I " + moveString.charAt(i));
-                        
-                    }
-                } else{
-                    if(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= i){
-                        System.out.println("Valid Move , this is line 45");
-                        
-                    } else if(moveString.charAt(i) >= 0 || moveString.charAt(i) == 1){
-                        if(moveString.charAt(i+1) == 0){
-                            System.out.println("Valid Move, this is line 49");
-                        } else if(moveString.charAt(i+1) >= 0){
-                            System.out.println("Invalid Move, this is line 52" + " "+ moveString.charAt(i));
-                            if(moveString.charAt(i) == moveString.charAt(i)){
-                                System.out.println("IT IS I " + moveString.charAt(i));
-                            }
-                        }else{
-                        System.out.println("Valid Move, this is line 55");
-                        }
+
+            for (int i = 0; i < moveString.length(); i++) {
+                // storing current char into an var we iterate through for checking
+                char currentChar = Characters[i];
+
+                System.out.println(Characters[i] + " " + i);
+                System.out.println(currentChar);
+
+                if (i == 0) {
+
+                    if (!(currentChar >= 'a' && currentChar <= 'i')) {
+                        System.out.println("invalid move, this is line 44");
+                        return false;
                     }
 
+                } else{
+
+                    if (!(currentChar >= '0' && currentChar <= '9')) {
+                            System.out.println("invalid move, this is line 51");
+                            System.out.print("IT IS I " +  currentChar);
+                            return false;
+                        }
+
+                    } 
                 }
             }
-        }
+                System.out.println("I have completed");
         return true;
     }
+
+
+
+       /*if (moveString.length() > 9) {
+            return false;
+        } else {
+            for (int i = 0; i< moveString.length(); i++) {
+                System.out.println(Characters[i] + " " + i);
+                
+                if(i == 0){
+                    if( Characters[i] >= 'a' &&  Characters[i] <= 'i'){
+                        System.out.println("Valid Move, this is line 42");  
+                    } else{
+                        System.out.println("invalid move, this is line 44");
+                        System.out.println("IT IS I " +  Characters[i]); 
+                    }
+                } else{
+                    if( Characters[i] >= 'a' &&  Characters[i] <= 'i'){
+                        System.out.println("Valid Move , this is line 49");
+                    } else if( Characters[i] >= '0' ||  Characters[i] == '1'){
+                        if( Characters[i-1] == '0'){
+                            System.out.println("Valid Move, this is line 52");
+                        } else if(Characters[i-1] >= '0'){
+                            System.out.println("Invalid Move, this is line 54" + " "+  (int)Characters[i]);
+                            if( Characters[i-1] ==  Characters[i-1]){
+                                System.out.println("IT IS I " +  Characters[i]);
+                            }
+                        }else{
+                        System.out.println("Valid Move, this is line 59");
+                        } */
+
 
     int[][] convertToMove (String moveString) {
         int[][] arrayOfMoveStatements = new int[3][2];
