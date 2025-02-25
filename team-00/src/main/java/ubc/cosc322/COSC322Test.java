@@ -158,5 +158,9 @@ public class COSC322Test extends GamePlayer{
 	void updateGameState (int[][] moveMade) {
 
 	}
+
+	void gameStart (Map<String, Object> msgDetails) {
+		
+	}
  
 }//end of class

@@ -111,14 +111,16 @@ public class HumanPlayer implements Runnable{
         if (start.equals(end) || gameBoard[end[0]-1][end[1]-1] == 3) {
             return false;
         } else if (start[0] == end[0]) {
-            for (int i = start[1]; i != end[1]; i -= (start[1]-end[1])/Math.abs(start[1]-end[1])) {
+            int direction = (start[1]-end[1])/Math.abs(start[1]-end[1]);
+            for (int i = start[1]-direction; i != end[1]; i -= direction) {
                 if (gameBoard[start[0]-1][i-1] != 0) {
                     return false;
                 }
             }
             return true;
         } else if (start[1] == end[1]) {
-            for (int i = start[0]; i != end[0]; i -= (start[0]-end[0])/Math.abs(start[0]-end[0])) {
+            int direction = (start[0]-end[0])/Math.abs(start[0]-end[0]);
+            for (int i = start[0]-direction; i != end[0]; i -= direction) {
                 if (gameBoard[i-1][start[1]-1] != 0) {
                     return false;
                 }
