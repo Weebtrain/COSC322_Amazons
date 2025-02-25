@@ -8,71 +8,141 @@ import ygraph.ai.smartfox.games.GameClient;
 public class HumanPlayer implements Runnable{
     //private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
+    private int[][] gameBoard = null;
+    private int queenIdentity = 2;
 
-    HumanPlayer (GameClient client) {
+    HumanPlayer (GameClient client, int[][] curBoard) {
         this.gameClient = client;
+        this.gameBoard = curBoard;
     }
 
+    @Override
     public void run() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         String move;
+        int[][] moveInt = null;
         do {
-            System.out.print("Enter move: ");
+            System.out.print("\nEnter move: ");
             move = myObj.nextLine();  // Read user input
-            //move = move.toLowerCase();
-        } while (!checkStringSyntax(move));
-        int[][] moveInt = convertToMove(move);
+            move = move.toLowerCase();
+            moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
+        } while (moveInt == null);
+        System.out.println("Sending Move");
         gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
     }
 
     boolean checkStringSyntax (String moveString) { //L##L##L##
-        if (moveString.length() > 9) {
+        //converting move string to array
+        char[] moveCharArray = moveString.toCharArray();
+
+        if (moveCharArray.length > 9 || moveCharArray.length < 6) {
             return false;
-        } else {
-            for (int i = 0; i<moveString.length(); i++) {
-                System.out.println(moveString.charAt(i) + " " + i);
-                if (i == 0) {
-                    if (!(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= 'i')) {
-                        System.out.println("Invalid Move");
-                        return false;
-                    }
-                } else {
-                    if (moveString.charAt(i-1) >= 'a' && moveString.charAt(i-1) <= 'i') {
-                        if (!(moveString.charAt(i) >= '0' && moveString.charAt(i) <= '9')) {
-                            System.out.println("Invalid Move");
-                            return false;
-                        }
-                    } else {
-                        if (!(moveString.charAt(i) >= 'a' && moveString.charAt(i) <= 'i') || !(moveString.charAt(i-1) == '1' && moveString.charAt(i) == '0')) {
-                            System.out.println("Invalid Move");
-                            return false;
-                        }
-                    }
-                }
-            }
         }
 
+        for (int i = 0; i < moveCharArray.length; i++) {    //Iterates through character array
+
+            if (i == 0) { // checks first character is a valid letter
+                if (!(moveCharArray[i] >= 'a' && moveCharArray[i] <= 'i')) {
+                    return false;
+                }
+            } else {
+                // checks if last character was a letter, if so next character must be a number
+                if (moveCharArray[i-1] >= 'a' && moveCharArray[i] <= 'i') {
+                    if (!(moveCharArray[i] >= '0' && moveCharArray[i] <= '9')) {
+                        return false;
+                    }
+                }
+                // otherwise last character was a number, therefore next character must be a letter unless last character was a one, then it can be a zero
+                else {
+                    if (!((moveCharArray[i] >= 'a' && moveCharArray[i] <= 'i') || (moveCharArray[i-1] == '1' && moveCharArray[i] == '0'))) {
+                        return false;
+                    }
+                }
+            } 
+        }
         return true;
     }
 
+
     int[][] convertToMove (String moveString) {
+        char[] moveCharArray = moveString.toCharArray();
         int[][] arrayOfMoveStatements = new int[3][2];
-        String[] locations = new String[3];
+        String locations;
         int start = 0, end = 1;
-        for (int i = 0; i<locations.length;i++) {
-            while (!(moveString.charAt(end) >= 'a' && moveString.charAt(end) <= 'i')) { 
+        for (int i = 0; i<3;i++) {
+            while (end<moveCharArray.length && !(moveCharArray[end] >= 'a' && moveCharArray[end] <= 'i')) { 
                 end++;
             }
-            locations[i] = moveString.substring(start, end);
-            arrayOfMoveStatements[i][0] = (int)(locations[i].charAt(0) - 'a') + 1;
-            arrayOfMoveStatements[i][1] = Integer.parseInt(locations[i].substring(1));
+            locations = moveString.substring(start, end);
+            arrayOfMoveStatements[i][0] = (int)(locations.charAt(0) - 'a') + 1;
+            arrayOfMoveStatements[i][1] = Integer.parseInt(locations.substring(1));
+            start = end;
+            end++;
         }
-        
         return arrayOfMoveStatements;
     }
 
+    int[][] checkMove (String moveString) {
+        if (!(checkStringSyntax(moveString))) { //checks if string syntax is correct
+            return null;
+        }
+        System.out.println("Syntax passed");
+        int[][] tempMoves = convertToMove(moveString);  //converts string into integer arrays of x and y positions
+        System.out.println("Move conversion passed");
+        if (!(checkMoveValidity(tempMoves))) {  //checks if moves are valid (queen selection, queen move and arrow fire)
+            return null;
+        }
+        System.out.println("Move Valid passed");
+        return tempMoves;
+    }
+
+    boolean checkMoveValidity (int[][] moves) {
+        if(!ensureQueenPosition(moves[0])) return false;    //Checks your queen is selected
+        System.out.println("Queen Position Valid");
+        if(!ensureValidDirection(moves[0], moves[1])) return false; //checks the queen can move there
+        System.out.println("Queen Move Valid");
+        if(!ensureValidDirection(moves[1], moves[2])) return false; //checks the queen can shoot from move
+        System.out.println("Queen Shot Valid");
+        return true;
+    }
+
+    boolean ensureValidDirection (int[] start, int[] end) {
+        if (start.equals(end) || gameBoard[end[0]-1][end[1]-1] == 3) {
+            return false;
+        } else if (start[0] == end[0]) {
+            for (int i = start[1]; i != end[1]; i -= (start[1]-end[1])/Math.abs(start[1]-end[1])) {
+                if (gameBoard[start[0]-1][i-1] == 3) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (start[1] == end[1]) {
+            for (int i = start[0]; i != end[0]; i -= (start[0]-end[0])/Math.abs(start[0]-end[0])) {
+                if (gameBoard[i-1][start[1]-1] == 3) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (Math.abs(start[0] - end[0]) == Math.abs(start[1] - end[1])) {
+            //Checks if directions are positive or negative to look for barricades
+            int xDirection = (start[0]-end[0])/Math.abs(start[0]-end[0]), yDirection = (start[1]-end[1])/Math.abs(start[1]-end[1]);
+            int distance = start[0] - end[0];
+            for (int i = 1; i<distance; i++) {
+                if (gameBoard[start[0] + i*xDirection - 1][start[1] + i*yDirection - 1] == 3) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    boolean ensureQueenPosition (int[] position) {
+        return gameBoard[position[0] - 1][position[1] - 1] == queenIdentity;
+    }
+
     ArrayList<Integer> arrayToArrayList (int[] array) {
-        ArrayList<Integer> returnList = new ArrayList<Integer>(2);
+        ArrayList<Integer> returnList = new ArrayList<>(2);
         returnList.add(0, array[0]);
         returnList.add(1, array[1]);
         return returnList;
