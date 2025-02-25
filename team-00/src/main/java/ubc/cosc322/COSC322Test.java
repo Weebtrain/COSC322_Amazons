@@ -26,6 +26,7 @@ public class COSC322Test extends GamePlayer{
     private String userName = null;
     private String passwd = null;
  
+	private int queenIdentity;
 	private int[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
     /**
      * The main method
@@ -86,10 +87,15 @@ public class COSC322Test extends GamePlayer{
 		if (messageType.equals(AmazonsGameMessage.GAME_STATE_BOARD)) {
 			//Sets up gui and our board matrix
 			this.initializeGameBoard((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
-
+		}
+		//Message recieved when game starts
+		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_START)) {
+			if (((String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)).equals(userName)) {
+				queenIdentity = 2;
+			} else queenIdentity = 1;
 			//Starts a human player or the ai depending on indication
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState));
+				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
 				H.start();
 			} else {
 				//run ai
@@ -98,6 +104,13 @@ public class COSC322Test extends GamePlayer{
 		//Message recieved when opponent makes a move
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_MOVE)) {
 			gamegui.updateGameState(msgDetails);
+			updateGameState(msgDetails);
+			if (humanPlay == true) {
+				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
+				H.start();
+			} else {
+				//run ai
+			}
 		}
     	return true;   	
     }
@@ -138,7 +151,9 @@ public class COSC322Test extends GamePlayer{
 
 	//Updates board matrix
 	void updateGameState (Map<String, Object> msgDetails) {
-
+		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR)).toString());
+		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT)).toString());
+		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS)).toString());
 	}
 	void updateGameState (int[][] moveMade) {
 

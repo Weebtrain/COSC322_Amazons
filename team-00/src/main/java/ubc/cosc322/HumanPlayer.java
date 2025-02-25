@@ -11,9 +11,10 @@ public class HumanPlayer implements Runnable{
     private int[][] gameBoard = null;
     private int queenIdentity = 2;
 
-    HumanPlayer (GameClient client, int[][] curBoard) {
+    HumanPlayer (GameClient client, int[][] curBoard, int queenId) {
         this.gameClient = client;
         this.gameBoard = curBoard;
+        this.queenIdentity = queenId;
     }
 
     @Override
