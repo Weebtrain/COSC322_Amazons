@@ -26,7 +26,7 @@ public class COSC322Test extends GamePlayer{
     private String userName = null;
     private String passwd = null;
  
-	private int queenIdentity;
+	final private int queenIdentity = 2;
 	private int[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
     /**
      * The main method
@@ -91,14 +91,13 @@ public class COSC322Test extends GamePlayer{
 		//Message recieved when game starts
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_START)) {
 			if (((String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)).equals(userName)) {
-				queenIdentity = 2;
-			} else queenIdentity = 1;
-			//Starts a human player or the ai depending on indication
-			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
-				H.start();
-			} else {
-				//run ai
+				//Starts a human player or the ai depending on indication
+				if (humanPlay == true) {
+					Thread H = new Thread(new HumanPlayer(gameClient,gameState));
+					H.start();
+				} else {
+					//run ai
+				}
 			}
 		}
 		//Message recieved when opponent makes a move
@@ -106,7 +105,7 @@ public class COSC322Test extends GamePlayer{
 			gamegui.updateGameState(msgDetails);
 			updateGameState(msgDetails);
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
+				Thread H = new Thread(new HumanPlayer(gameClient,gameState));
 				H.start();
 			} else {
 				//run ai

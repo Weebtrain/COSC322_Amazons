@@ -9,12 +9,11 @@ public class HumanPlayer implements Runnable{
     //private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
     private int[][] gameBoard = null;
-    private int queenIdentity = 2;
+    final private int queenIdentity = 2;
 
-    HumanPlayer (GameClient client, int[][] curBoard, int queenId) {
+    HumanPlayer (GameClient client, int[][] curBoard) {
         this.gameClient = client;
         this.gameBoard = curBoard;
-        this.queenIdentity = queenId;
     }
 
     @Override
