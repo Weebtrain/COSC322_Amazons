@@ -15,7 +15,6 @@ public class HumanPlayer implements Runnable{
         this.gameClient = client;
         this.gameBoard = curBoard;
         this.queenIdentity = queenId;
-        System.out.print(queenIdentity);
     }
 
     @Override

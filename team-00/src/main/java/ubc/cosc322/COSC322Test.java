@@ -97,8 +97,7 @@ public class COSC322Test extends GamePlayer{
 			gamegui.updateGameState(msgDetails);
 			updateGameState(msgDetails);
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
-				H.start();
+				startHumanPlay();
 			} else {
 				//run ai
 			}
@@ -157,13 +156,17 @@ public class COSC322Test extends GamePlayer{
 			queenIdentity = 1;
 			//Starts a human player or the ai depending on indication
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
-				H.start();
+				startHumanPlay();
 			} else {
 				//run ai
 			}
 		} else queenIdentity = 2;
 		System.out.print(queenIdentity);
+	}
+
+	void startHumanPlay () {
+		Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
+		H.start();
 	}
  
 }//end of class
