@@ -136,9 +136,7 @@ public class COSC322Test extends GamePlayer{
 		for (int i = 1; i<11;i++) {
 			for (int j = 1; j<11; j++) {
 				gameState[i-1][j-1] = board.get((i*11)+j);
-				System.out.print(gameState[i-1][j-1]);
 			}
-			System.out.println();
 		}
 	}
 

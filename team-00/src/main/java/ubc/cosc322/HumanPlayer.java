@@ -29,7 +29,6 @@ public class HumanPlayer implements Runnable{
             move = move.toLowerCase();
             moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
         } while (moveInt == null);
-        System.out.println("Sending Move");
         gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
     }
 
@@ -88,23 +87,17 @@ public class HumanPlayer implements Runnable{
         if (!(checkStringSyntax(moveString))) { //checks if string syntax is correct
             return null;
         }
-        System.out.println("Syntax passed");
         int[][] tempMoves = convertToMove(moveString);  //converts string into integer arrays of x and y positions
-        System.out.println("Move conversion passed");
         if (!(checkMoveValidity(tempMoves))) {  //checks if moves are valid (queen selection, queen move and arrow fire)
             return null;
         }
-        System.out.println("Move Valid passed");
         return tempMoves;
     }
 
     boolean checkMoveValidity (int[][] moves) {
         if(!ensureQueenPosition(moves[0])) return false;    //Checks your queen is selected
-        System.out.println("Queen Position Valid");
         if(!ensureValidDirection(moves[0], moves[1])) return false; //checks the queen can move there
-        System.out.println("Queen Move Valid");
         if(!ensureValidDirection(moves[1], moves[2])) return false; //checks the queen can shoot from move
-        System.out.println("Queen Shot Valid");
         return true;
     }
 
@@ -142,7 +135,6 @@ public class HumanPlayer implements Runnable{
     }
 
     boolean ensureQueenPosition (int[] position) {
-        System.out.println("Queen of " + gameBoard[position[0] - 1][position[1] - 1] + " at " + position[0] + "," + position[1]);
         return gameBoard[position[0] - 1][position[1] - 1] == queenIdentity;
     }
 
