@@ -6,12 +6,13 @@ import java.util.Scanner;
 import ygraph.ai.smartfox.games.GameClient;
 
 public class HumanPlayer implements Runnable{
-    //private COSC322Test gameHandler = null;
+    private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
     private int[][] gameBoard = null;
     private int queenIdentity;
 
-    HumanPlayer (GameClient client, int[][] curBoard, int queenId) {
+    HumanPlayer (COSC322Test handler, GameClient client, int[][] curBoard, int queenId) {
+        this.gameHandler = handler;
         this.gameClient = client;
         this.gameBoard = curBoard;
         this.queenIdentity = queenId;
@@ -28,6 +29,7 @@ public class HumanPlayer implements Runnable{
             move = move.toLowerCase();
             moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
         } while (moveInt == null);
+        gameHandler.updateGameState(moveInt, queenIdentity);
         gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
     }
 

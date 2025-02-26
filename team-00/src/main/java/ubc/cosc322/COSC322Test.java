@@ -95,7 +95,7 @@ public class COSC322Test extends GamePlayer{
 		//Message recieved when opponent makes a move
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_MOVE)) {
 			gamegui.updateGameState(msgDetails);
-			updateGameState(msgDetails);
+			updateGameState(msgDetails, 3-queenIdentity);
 			if (humanPlay == true) {
 				startHumanPlay();
 			} else {
@@ -140,13 +140,24 @@ public class COSC322Test extends GamePlayer{
 	}
 
 	//Updates board matrix
-	void updateGameState (Map<String, Object> msgDetails) {
+	private void updateGameState (Map<String, Object> msgDetails, int queenNum) {
 		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR)).toString());
 		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT)).toString());
 		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS)).toString());
+		ArrayList<Integer> move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+		gameState[move.get(0)][move.get(1)] = 0;
+		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+		gameState[move.get(0)][move.get(1)] = queenNum;
+		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
+		gameState[move.get(0)][move.get(1)] = 3;
 	}
-	void updateGameState (int[][] moveMade) {
-
+	public void updateGameState (int[][] moveMade, int queenNum) {
+		System.out.println(moveMade[0][0] + " " + moveMade[0][1]);
+		System.out.println(moveMade[1][0] + " " + moveMade[1][1]);
+		System.out.println(moveMade[2][0] + " " + moveMade[2][1]);
+		gameState[moveMade[0][0] - 1][moveMade[0][1] - 1] = 0;
+		gameState[moveMade[1][0] - 1][moveMade[1][1] - 1] = queenNum;
+		gameState[moveMade[2][0] - 1][moveMade[2][1] - 1] = 3;
 	}
 
 	void gameStart (Map<String, Object> msgDetails) {
@@ -165,7 +176,7 @@ public class COSC322Test extends GamePlayer{
 	}
 
 	void startHumanPlay () {
-		Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
+		Thread H = new Thread(new HumanPlayer(this,gameClient,gameState,queenIdentity));
 		H.start();
 	}
  
