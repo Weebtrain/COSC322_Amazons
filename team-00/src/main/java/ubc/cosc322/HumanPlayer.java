@@ -6,29 +6,40 @@ import java.util.Scanner;
 import ygraph.ai.smartfox.games.GameClient;
 
 public class HumanPlayer implements Runnable{
-    //private COSC322Test gameHandler = null;
+    private COSC322Test gameHandler = null;
     private GameClient gameClient = null;
     private int[][] gameBoard = null;
-    private int queenIdentity;
+    private int queenIdentity = 1;
 
-    HumanPlayer (GameClient client, int[][] curBoard, int queenId) {
+    HumanPlayer (COSC322Test handler, GameClient client, int[][] curBoard, int queenId) {
+        this.gameHandler = handler;
         this.gameClient = client;
         this.gameBoard = curBoard;
         this.queenIdentity = queenId;
-        System.out.print(queenIdentity);
     }
 
     @Override
     public void run() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        String move;
+        String move = null;
         int[][] moveInt = null;
         do {
             System.out.print("\nEnter move: ");
-            move = myObj.nextLine();  // Read user input
-            move = move.toLowerCase();
-            moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
+            try {
+                move = myObj.nextLine();  // Read user input
+                move = move.toLowerCase();
+                moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
+            } catch (Exception e) {
+                myObj.close();
+                return;
+            }
+            if (Thread.interrupted()) {
+                System.out.println("Interrupt");
+                return;
+            }
         } while (moveInt == null);
+        System.out.println("Move sent");
+        myObj.close();
         gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
     }
 

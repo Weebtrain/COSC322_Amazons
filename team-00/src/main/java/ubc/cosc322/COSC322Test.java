@@ -19,6 +19,7 @@ import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
  */
 public class COSC322Test extends GamePlayer{
 	final private boolean humanPlay = true;	//sets human player or ai to run
+	private Thread H = null;
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
@@ -26,7 +27,7 @@ public class COSC322Test extends GamePlayer{
     private String userName = null;
     private String passwd = null;
  
-	private int queenIdentity;
+	private int queenIdentity = 1;
 	private int[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
     /**
      * The main method
@@ -85,8 +86,12 @@ public class COSC322Test extends GamePlayer{
 
 		//Message on entering the room that gives board state
 		if (messageType.equals(AmazonsGameMessage.GAME_STATE_BOARD)) {
+			if (humanPlay) {
+				closeHumanPlayer();
+			}
 			//Sets up gui and our board matrix
 			this.initializeGameBoard((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
+			openHumanPlayer();
 		}
 		//Message recieved when game starts
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_START)) {
@@ -97,10 +102,15 @@ public class COSC322Test extends GamePlayer{
 			gamegui.updateGameState(msgDetails);
 			updateGameState(msgDetails);
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
-				H.start();
+				openHumanPlayer();
 			} else {
 				//run ai
+			}
+		} 
+		//if opposing player is lost, stop all processes
+		else if (messageType.equals(AmazonsGameMessage.GAME_STATE_PLAYER_LOST)) {
+			if (humanPlay) {
+				closeHumanPlayer();
 			}
 		}
     	return true;   	
@@ -157,13 +167,23 @@ public class COSC322Test extends GamePlayer{
 			queenIdentity = 1;
 			//Starts a human player or the ai depending on indication
 			if (humanPlay == true) {
-				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
-				H.start();
+				openHumanPlayer();
 			} else {
 				//run ai
 			}
 		} else queenIdentity = 2;
-		System.out.print(queenIdentity);
+	}
+
+	void openHumanPlayer () {
+		H = new Thread(new HumanPlayer(this,gameClient,gameState,queenIdentity));
+		H.start();
 	}
  
+	void closeHumanPlayer () {
+		if (H != null) {
+			System.out.println("Press enter until it asks for a move");
+			H.interrupt();
+		}
+	}
+
 }//end of class
