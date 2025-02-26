@@ -44,19 +44,19 @@ public class HumanPlayer implements Runnable{
         for (int i = 0; i < moveCharArray.length; i++) {    //Iterates through character array
 
             if (i == 0) { // checks first character is a valid letter
-                if (!(moveCharArray[i] >= 'a' && moveCharArray[i] <= 'i')) {
+                if (!(moveCharArray[i] >= 'a' && moveCharArray[i] <= 'j')) {
                     return false;
                 }
             } else {
                 // checks if last character was a letter, if so next character must be a number
-                if (moveCharArray[i-1] >= 'a' && moveCharArray[i] <= 'i') {
+                if (moveCharArray[i-1] >= 'a' && moveCharArray[i] <= 'j') {
                     if (!(moveCharArray[i] >= '0' && moveCharArray[i] <= '9')) {
                         return false;
                     }
                 }
                 // otherwise last character was a number, therefore next character must be a letter unless last character was a one, then it can be a zero
                 else {
-                    if (!((moveCharArray[i] >= 'a' && moveCharArray[i] <= 'i') || (moveCharArray[i-1] == '1' && moveCharArray[i] == '0'))) {
+                    if (!((moveCharArray[i] >= 'a' && moveCharArray[i] <= 'j') || (moveCharArray[i-1] == '1' && moveCharArray[i] == '0'))) {
                         return false;
                     }
                 }
@@ -72,7 +72,7 @@ public class HumanPlayer implements Runnable{
         String locations;
         int start = 0, end = 1;
         for (int i = 0; i<3;i++) {
-            while (end<moveCharArray.length && !(moveCharArray[end] >= 'a' && moveCharArray[end] <= 'i')) { 
+            while (end<moveCharArray.length && !(moveCharArray[end] >= 'a' && moveCharArray[end] <= 'j')) { 
                 end++;
             }
             locations = moveString.substring(start, end);
@@ -142,6 +142,7 @@ public class HumanPlayer implements Runnable{
     }
 
     boolean ensureQueenPosition (int[] position) {
+        System.out.println("Queen of " + gameBoard[position[0] - 1][position[1] - 1] + " at " + position[0] + "," + position[1]);
         return gameBoard[position[0] - 1][position[1] - 1] == queenIdentity;
     }
 

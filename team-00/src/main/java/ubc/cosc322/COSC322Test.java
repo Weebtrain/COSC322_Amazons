@@ -33,7 +33,7 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain2", "COSC322");	//Username display in server, password into server
+    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
@@ -135,8 +135,10 @@ public class COSC322Test extends GamePlayer{
 		gameState = new int[10][10];
 		for (int i = 1; i<11;i++) {
 			for (int j = 1; j<11; j++) {
-				gameState[j-1][i-1] = board.get((i*11)+j);
+				gameState[i-1][j-1] = board.get((i*11)+j);
+				System.out.print(gameState[i-1][j-1]);
 			}
+			System.out.println();
 		}
 	}
 
@@ -154,7 +156,7 @@ public class COSC322Test extends GamePlayer{
 		System.out.println("Black Player: " + (msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)));
 		System.out.println("White Player: " + (msgDetails.get(AmazonsGameMessage.PLAYER_WHITE)));
 		if (((String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)).equals(userName)) {
-			queenIdentity = 2;
+			queenIdentity = 1;
 			//Starts a human player or the ai depending on indication
 			if (humanPlay == true) {
 				Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
@@ -162,7 +164,7 @@ public class COSC322Test extends GamePlayer{
 			} else {
 				//run ai
 			}
-		} else queenIdentity = 1;
+		} else queenIdentity = 2;
 		System.out.print(queenIdentity);
 	}
  
