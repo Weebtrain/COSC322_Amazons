@@ -96,11 +96,7 @@ public class COSC322Test extends GamePlayer{
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_MOVE)) {
 			gamegui.updateGameState(msgDetails);
 			updateGameState(msgDetails, 3-queenIdentity);
-			if (humanPlay == true) {
-				startHumanPlay();
-			} else {
-				//run ai
-			}
+			RunPlayer();
 		}
     	return true;   	
     }
@@ -166,13 +162,18 @@ public class COSC322Test extends GamePlayer{
 		if (((String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)).equals(userName)) {
 			queenIdentity = 1;
 			//Starts a human player or the ai depending on indication
-			if (humanPlay == true) {
-				startHumanPlay();
-			} else {
-				//run ai
-			}
+			RunPlayer();
 		} else queenIdentity = 2;
 		System.out.print(queenIdentity);
+	}
+
+	void RunPlayer () {
+		//Starts a human player or the ai depending on indication
+		if (humanPlay == true) {
+			startHumanPlay();
+		} else {
+			//run ai
+		}
 	}
 
 	void startHumanPlay () {
