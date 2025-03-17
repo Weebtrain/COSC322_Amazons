@@ -1,6 +1,5 @@
 package ubc.cosc322;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import ygraph.ai.smartfox.games.GameClient;
@@ -30,7 +29,8 @@ public class HumanPlayer implements Runnable{
             moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
         } while (moveInt == null);
         gameHandler.updateGameState(moveInt, queenIdentity);
-        gameClient.sendMoveMessage(arrayToArrayList(moveInt[0]), arrayToArrayList(moveInt[1]), arrayToArrayList(moveInt[2]));
+
+        gameClient.sendMoveMessage(Extras.arrayToArrayList(moveInt[0]), Extras.arrayToArrayList(moveInt[1]), Extras.arrayToArrayList(moveInt[2]));
     }
 
     boolean checkStringSyntax (String moveString) { //L##L##L##
@@ -137,12 +137,5 @@ public class HumanPlayer implements Runnable{
 
     boolean ensureQueenPosition (int[] position) {
         return gameBoard[position[0] - 1][position[1] - 1] == queenIdentity;
-    }
-
-    ArrayList<Integer> arrayToArrayList (int[] array) {
-        ArrayList<Integer> returnList = new ArrayList<>(2);
-        returnList.add(0, array[0]);
-        returnList.add(1, array[1]);
-        return returnList;
     }
 }
