@@ -19,6 +19,7 @@ import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
  */
 public class COSC322Test extends GamePlayer{
 	final private boolean humanPlay = true;	//sets human player or ai to run
+	private boolean playing = false;
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
@@ -90,6 +91,7 @@ public class COSC322Test extends GamePlayer{
 		}
 		//Message recieved when game starts
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_START)) {
+			playing = true;
 			gameStart(msgDetails);
 		}
 		//Message recieved when opponent makes a move
@@ -174,11 +176,13 @@ public class COSC322Test extends GamePlayer{
 	}
 
 	void RunPlayer () {
-		//Starts a human player or the ai depending on indication
-		if (humanPlay == true) {
-			startHumanPlay();
-		} else {
-			//run ai
+		if (playing) {
+			//Starts a human player or the ai depending on indication
+			if (humanPlay == true) {
+				startHumanPlay();
+			} else {
+				//run ai
+			}
 		}
 	}
 
