@@ -67,7 +67,7 @@ public class COSC322Test extends GamePlayer{
 
     @Override
     public void onLogin() {
-		int index = 14;	//Room index
+		//int index = 14;	//Room index
 		List<Room> rooms = gameClient.getRoomList();
 		//gameClient.joinRoom(rooms.get(index).getName());
 		
@@ -187,8 +187,11 @@ public class COSC322Test extends GamePlayer{
 	}
 
 	void startHumanPlay () {
-		Thread H = new Thread(new HumanPlayer(this,gameClient,gameState,queenIdentity));
+		Thread H = new Thread(new HumanPlayer(this,gameState,queenIdentity));
 		H.start();
 	}
- 
+
+	public void SendGameMessage (int[][] move) {
+		gameClient.sendMoveMessage(Extras.arrayToArrayList(move[0]), Extras.arrayToArrayList(move[1]), Extras.arrayToArrayList(move[2]));
+	}
 }//end of class

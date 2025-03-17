@@ -2,17 +2,14 @@ package ubc.cosc322;
 
 import java.util.Scanner;
 
-import ygraph.ai.smartfox.games.GameClient;
-
 public class HumanPlayer implements Runnable{
     private COSC322Test gameHandler = null;
-    private GameClient gameClient = null;
     private int[][] gameBoard = null;
     private int queenIdentity;
 
-    HumanPlayer (COSC322Test handler, GameClient client, int[][] curBoard, int queenId) {
+    HumanPlayer (COSC322Test handler, int[][] curBoard, int queenId) {
         this.gameHandler = handler;
-        this.gameClient = client;
+
         this.gameBoard = curBoard;
         this.queenIdentity = queenId;
     }
@@ -30,7 +27,7 @@ public class HumanPlayer implements Runnable{
         } while (moveInt == null);
         gameHandler.updateGameState(moveInt, queenIdentity);
 
-        gameClient.sendMoveMessage(Extras.arrayToArrayList(moveInt[0]), Extras.arrayToArrayList(moveInt[1]), Extras.arrayToArrayList(moveInt[2]));
+        gameHandler.SendGameMessage(moveInt);
     }
 
     boolean checkStringSyntax (String moveString) { //L##L##L##
