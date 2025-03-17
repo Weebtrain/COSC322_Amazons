@@ -28,7 +28,7 @@ public class COSC322Test extends GamePlayer{
     private String passwd = null;
  
 	private int queenIdentity;
-	private int[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
+	private byte[][] gameState = null;	//10x10 array holding the game board. 2 is black queen, 1 is white queen, 3 is arrow
     /**
      * The main method
      * @param args for name and passwd (current, any string would work)
@@ -128,10 +128,10 @@ public class COSC322Test extends GamePlayer{
 	//Initializes board state to 10x10 integer matrix for use, also initializes gamegui
 	void initializeGameBoard (ArrayList<Integer> board) {
 		gamegui.setGameState(board);
-		gameState = new int[10][10];
+		gameState = new byte[10][10];
 		for (int i = 1; i<11;i++) {
 			for (int j = 1; j<11; j++) {
-				gameState[i-1][j-1] = board.get((i*11)+j);
+				gameState[i-1][j-1] = (byte)(int)board.get((i*11)+j);
 			}
 		}
 	}
@@ -143,14 +143,14 @@ public class COSC322Test extends GamePlayer{
 		ArrayList<Integer> move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
 		gameState[move.get(0)-1][move.get(1)-1] = 0;
 		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
-		gameState[move.get(0)-1][move.get(1)-1] = queenNum;
+		gameState[move.get(0)-1][move.get(1)-1] = (byte)queenNum;
 		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
 		gameState[move.get(0)-1][move.get(1)-1] = 3;
 		//displayGameStateArray();
 	}
-	public void updateGameState (int[][] moveMade, int queenNum) {
+	public void updateGameState (byte[][] moveMade, int queenNum) {
 		gameState[moveMade[0][0] - 1][moveMade[0][1] - 1] = 0;
-		gameState[moveMade[1][0] - 1][moveMade[1][1] - 1] = queenNum;
+		gameState[moveMade[1][0] - 1][moveMade[1][1] - 1] = (byte)queenNum;
 		gameState[moveMade[2][0] - 1][moveMade[2][1] - 1] = 3;
 		gamegui.updateGameState(Extras.arrayToArrayList(moveMade[0]), Extras.arrayToArrayList(moveMade[1]), Extras.arrayToArrayList(moveMade[2]));
 		//displayGameStateArray();
@@ -191,7 +191,7 @@ public class COSC322Test extends GamePlayer{
 		H.start();
 	}
 
-	public void SendGameMessage (int[][] move) {
+	public void SendGameMessage (byte[][] move) {
 		gameClient.sendMoveMessage(Extras.arrayToArrayList(move[0]), Extras.arrayToArrayList(move[1]), Extras.arrayToArrayList(move[2]));
 	}
 }//end of class
