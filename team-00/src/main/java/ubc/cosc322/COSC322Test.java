@@ -33,7 +33,7 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
+    	COSC322Test player = new COSC322Test("WeebTrain2", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
@@ -68,8 +68,8 @@ public class COSC322Test extends GamePlayer{
     public void onLogin() {
 		int index = 14;	//Room index
 		List<Room> rooms = gameClient.getRoomList();
-		gameClient.joinRoom(rooms.get(index).getName());
-
+		//gameClient.joinRoom(rooms.get(index).getName());
+		
     	userName = gameClient.getUserName();
 		if(this.gamegui != null){
 			gamegui.setRoomInformation(rooms);
@@ -94,13 +94,8 @@ public class COSC322Test extends GamePlayer{
 		}
 		//Message recieved when opponent makes a move
 		else if (messageType.equals(AmazonsGameMessage.GAME_ACTION_MOVE)) {
-			gamegui.updateGameState(msgDetails);
-			updateGameState(msgDetails);
-			if (humanPlay == true) {
-				startHumanPlay();
-			} else {
-				//run ai
-			}
+			updateGameState(msgDetails, 3-queenIdentity);
+			RunPlayer();
 		}
     	return true;   	
     }
@@ -140,13 +135,32 @@ public class COSC322Test extends GamePlayer{
 	}
 
 	//Updates board matrix
-	void updateGameState (Map<String, Object> msgDetails) {
-		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR)).toString());
-		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT)).toString());
-		System.out.println(((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS)).toString());
-	}
-	void updateGameState (int[][] moveMade) {
+	private void updateGameState (Map<String, Object> msgDetails, int queenNum) {
+		gamegui.updateGameState(msgDetails);
 
+		ArrayList<Integer> move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+		gameState[move.get(0)-1][move.get(1)-1] = 0;
+		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+		gameState[move.get(0)-1][move.get(1)-1] = queenNum;
+		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
+		gameState[move.get(0)-1][move.get(1)-1] = 3;
+		//displayGameStateArray();
+	}
+	public void updateGameState (int[][] moveMade, int queenNum) {
+		gameState[moveMade[0][0] - 1][moveMade[0][1] - 1] = 0;
+		gameState[moveMade[1][0] - 1][moveMade[1][1] - 1] = queenNum;
+		gameState[moveMade[2][0] - 1][moveMade[2][1] - 1] = 3;
+		gamegui.updateGameState(Extras.arrayToArrayList(moveMade[0]), Extras.arrayToArrayList(moveMade[1]), Extras.arrayToArrayList(moveMade[2]));
+		//displayGameStateArray();
+	}
+
+	void displayGameStateArray() {	//For debugging purposes only, commented out in updateGameState functions
+		for (int i = 0; i<10; i++) {
+			for (int j = 0; j<10; j++) {
+				System.out.print(gameState[i][j]);
+			}
+			System.out.println();
+		}
 	}
 
 	void gameStart (Map<String, Object> msgDetails) {
@@ -155,17 +169,21 @@ public class COSC322Test extends GamePlayer{
 		if (((String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK)).equals(userName)) {
 			queenIdentity = 1;
 			//Starts a human player or the ai depending on indication
-			if (humanPlay == true) {
-				startHumanPlay();
-			} else {
-				//run ai
-			}
+			RunPlayer();
 		} else queenIdentity = 2;
-		System.out.print(queenIdentity);
+	}
+
+	void RunPlayer () {
+		//Starts a human player or the ai depending on indication
+		if (humanPlay == true) {
+			startHumanPlay();
+		} else {
+			//run ai
+		}
 	}
 
 	void startHumanPlay () {
-		Thread H = new Thread(new HumanPlayer(gameClient,gameState,queenIdentity));
+		Thread H = new Thread(new HumanPlayer(this,gameClient,gameState,queenIdentity));
 		H.start();
 	}
  
