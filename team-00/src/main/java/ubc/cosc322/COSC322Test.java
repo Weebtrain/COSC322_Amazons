@@ -146,6 +146,7 @@ public class COSC322Test extends GamePlayer{
 		gameState[move.get(0)][move.get(1)] = queenNum;
 		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
 		gameState[move.get(0)][move.get(1)] = 3;
+		displayGameStateArray();
 	}
 	public void updateGameState (int[][] moveMade, int queenNum) {
 		System.out.println(moveMade[0][0] + " " + moveMade[0][1]);
@@ -154,6 +155,16 @@ public class COSC322Test extends GamePlayer{
 		gameState[moveMade[0][0] - 1][moveMade[0][1] - 1] = 0;
 		gameState[moveMade[1][0] - 1][moveMade[1][1] - 1] = queenNum;
 		gameState[moveMade[2][0] - 1][moveMade[2][1] - 1] = 3;
+		displayGameStateArray();
+	}
+
+	void displayGameStateArray() {
+		for (int i = 0; i<gameState.length; i++) {
+			for (int j = 0; j<gameState[i].length; j++) {
+				System.out.print(gameState[i][j]);
+			}
+			System.out.println();
+		}
 	}
 
 	void gameStart (Map<String, Object> msgDetails) {
