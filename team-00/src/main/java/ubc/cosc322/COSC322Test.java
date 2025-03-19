@@ -40,7 +40,7 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain2", "COSC322");	//Username display in server, password into server
+    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
@@ -154,21 +154,19 @@ public class COSC322Test extends GamePlayer{
 		gameState[move.get(0)-1][move.get(1)-1] = 3;
 		//displayGameStateArray();
 	}
-	public void updateGameState (byte[][] moveMade, int queenNum) {
+	public void updateGameStateHuman (byte[][] moveMade, int queenNum) {
 		gameState[moveMade[0][0] - 1][moveMade[0][1] - 1] = 0;
 		gameState[moveMade[1][0] - 1][moveMade[1][1] - 1] = (byte)queenNum;
 		gameState[moveMade[2][0] - 1][moveMade[2][1] - 1] = 3;
 		gamegui.updateGameState(Extras.arrayToArrayList(moveMade[0]), Extras.arrayToArrayList(moveMade[1]), Extras.arrayToArrayList(moveMade[2]));
 		//displayGameStateArray();
 	}
-
-	void displayGameStateArray() {	//For debugging purposes only, commented out in updateGameState functions
-		for (int i = 0; i<10; i++) {
-			for (int j = 0; j<10; j++) {
-				System.out.print(gameState[i][j]);
-			}
-			System.out.println();
-		}
+	public void updateGameStateAI (byte[][] moveMade, int queenNum) {
+		gameState[moveMade[0][0]][moveMade[0][1]] = 0;
+		gameState[moveMade[1][0]][moveMade[1][1]] = (byte)queenNum;
+		gameState[moveMade[2][0]][moveMade[2][1]] = 3;
+		gamegui.updateGameState(Extras.arrayToArrayList(moveMade[0]), Extras.arrayToArrayList(moveMade[1]), Extras.arrayToArrayList(moveMade[2]));
+		//displayGameStateArray();
 	}
 
 	void gameStart (Map<String, Object> msgDetails) {
@@ -189,6 +187,8 @@ public class COSC322Test extends GamePlayer{
 			} else {
 				if (ai == null) {
 					ai = new AIPlayer(this, gameState, queenIdentity, policyGeneral, policyWin, policyLoss, maxDepth);
+				} else {
+					ai.setGameState(gameState);
 				}
 				startAIPlay();
 			}

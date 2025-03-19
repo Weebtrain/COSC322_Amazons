@@ -27,4 +27,23 @@ public class Extras {
 		}
         return queenPositions;
     }
+
+    public static void displayGameStateArray(byte[][] board) {	//For debugging purposes only, commented out in updateGameState functions
+		for (int i = 0; i<10; i++) {
+			for (int j = 0; j<10; j++) {
+				System.out.print(board[i][j]);
+			}
+			System.out.println();
+		}
+	}
+
+    public static byte[][] cloneMatrix (byte[][] s) {
+        byte[][] f = new byte[s.length][s[0].length];
+        for (int i = 0; i<10; i++) {
+			for (int j = 0; j<10; j++) {
+				f[i][j] = s[i][j];
+			}
+		}
+        return f;
+    }
 }

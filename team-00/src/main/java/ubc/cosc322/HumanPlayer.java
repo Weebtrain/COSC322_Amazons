@@ -25,7 +25,7 @@ public class HumanPlayer implements Runnable{
             move = move.toLowerCase();
             moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
         } while (moveInt == null);
-        gameHandler.updateGameState(moveInt, queenIdentity);
+        gameHandler.updateGameStateHuman(moveInt, queenIdentity);
 
         gameHandler.SendGameMessage(moveInt);
     }
