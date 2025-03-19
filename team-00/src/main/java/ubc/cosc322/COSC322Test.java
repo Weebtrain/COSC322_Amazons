@@ -18,8 +18,14 @@ import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
  *
  */
 public class COSC322Test extends GamePlayer{
-	final private boolean humanPlay = true;	//sets human player or ai to run
+	final private boolean humanPlay = false;	//sets human player or ai to run
 	private boolean playing = false;
+	private AIPlayer ai = null;
+
+	private final float policyGeneral = 0.01f;
+	private final float policyWin = -1;
+	private final float policyLoss = 1;
+	private final int maxDepth = 150;
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
@@ -181,13 +187,21 @@ public class COSC322Test extends GamePlayer{
 			if (humanPlay == true) {
 				startHumanPlay();
 			} else {
-				//run ai
+				if (ai == null) {
+					ai = new AIPlayer(this, gameState, queenIdentity, policyGeneral, policyWin, policyLoss, maxDepth);
+				}
+				startAIPlay();
 			}
 		}
 	}
 
 	void startHumanPlay () {
 		Thread H = new Thread(new HumanPlayer(this,gameState,queenIdentity));
+		H.start();
+	}
+
+	void startAIPlay () {
+		Thread H = new Thread(ai);
 		H.start();
 	}
 

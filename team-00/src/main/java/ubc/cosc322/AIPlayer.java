@@ -7,41 +7,96 @@ public class AIPlayer implements Runnable {
     private COSC322Test gameHandler = null;
     private gameState gameBoard = null;
     private int queenIdentity;
+    private Policy p;
+    private int maxDepth;
 
-    private final int initialNodeCapacity = 1000000;
-
-    public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId) {
+    public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l, int maxD) {
         this.gameHandler = handler;
         this.gameBoard = new gameState(curBoard);
         this.queenIdentity = queenId;
+        this.p = new Policy(g,w,l);
+        this.maxDepth = maxD;
+    }
+
+    public void setGameState (byte[][] s) {
+        gameBoard = new gameState(s);
     }
 
     @Override
     public void run () {
-
+        startMaxValue(gameBoard, 0, 0, 0);
     }
 
-    int minValue(gameState s, int a, int b) {
-        int v = 10000000;
+    void startMaxValue(gameState s, float a, float b, int depth) {
+        float v = -10000000;
+        gameState currentBestMove = null;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity);
-        //if (YoungOnes.isEmpty()) return U(s);
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
-            v = Math.min(v,maxValue(youngOne,a,b));
+            float i = minValue(youngOne,a,b,depth+1);
+            if (v < i) {
+                v = i;
+                currentBestMove = youngOne;
+            }
+            if (v >= b) {
+                extractMoveAndSend(youngOne);
+                return;   //killer move
+            }
+            a = Math.max(v,a);
+        }
+        extractMoveAndSend(currentBestMove);
+    }
+
+    void extractMoveAndSend (gameState move) {
+        byte[][] moves = new byte[3][2];
+        for (int i = 0; i<10; i++) {
+			for (int j = 0; j<10; j++) {
+				if (gameBoard.getBoardState()[i][j] == queenIdentity && move.getBoardState()[i][j] == 0) {
+                    moves[0][0] = (byte)i;
+                    moves[0][1] = (byte)j;
+                }
+                if (move.getBoardState()[i][j] == queenIdentity && gameBoard.getBoardState()[i][j] == 0) {
+                    moves[1][0] = (byte)i;
+                    moves[1][1] = (byte)j;
+                }
+                if (move.getBoardState()[i][j] == 3 && gameBoard.getBoardState()[i][j] == 0) {
+                    moves[2][0] = (byte)i;
+                    moves[2][1] = (byte)j;
+                }
+			}
+		}
+        gameHandler.updateGameState(moves, queenIdentity);
+
+        gameHandler.SendGameMessage(moves);
+    }
+
+    float minValue(gameState s, float a, float b, int depth) {
+        if (depth >= maxDepth) {
+            return p.loss + p.general*depth;
+        }
+        float v = 10000000;
+        PriorityQueue<gameState> YoungOnes = generateStates(s, 3-queenIdentity);
+        if (YoungOnes.isEmpty()) return p.win + p.general*depth;
+        while (!YoungOnes.isEmpty()) {
+            gameState youngOne = YoungOnes.poll();
+            v = Math.min(v,maxValue(youngOne,a,b,depth+1));
             if (v <= a) return v;
             b = Math.min(v,b);
         }
         return v;
     }
 
-    int maxValue(gameState s, int a, int b) {
-        int v = -10000000;
+    float maxValue(gameState s, float a, float b, int depth) {
+        if (depth >= maxDepth) {
+            return p.loss + p.general*depth;
+        }
+        float v = -10000000;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity);
-        //if (YoungOnes.isEmpty()) return U(s);
+        if (YoungOnes.isEmpty()) return p.loss + p.general*depth;
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
-            v = Math.max(v,minValue(youngOne,a,b));
-            if (v >= b) return v;
+            v = Math.max(v,minValue(youngOne,a,b,depth+1));
+            if (v >= b) return v;   //killer move
             a = Math.max(v,a);
         }
         return v;
@@ -182,6 +237,18 @@ class gameState implements Comparable<gameState> {
     @Override
     public int compareTo (gameState g) {
         return this.h - g.h;
+    }
+}
+
+class Policy {
+    public float general;
+    public float win;
+    public float loss;
+
+    Policy (float g, float w, float l) {
+        general = g;
+        win = w;
+        loss = l;
     }
 }
 
