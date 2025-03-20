@@ -37,7 +37,7 @@ public class AIPlayer implements Runnable {
     @Override
     public void run () {
         start = System.currentTimeMillis();
-        initializeKillers();
+        //initializeKillers();
         currentMaxDepth = maxDepth;
         startMaxValue(gameBoard, 0, 0, 0);
     }
