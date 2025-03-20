@@ -9,18 +9,19 @@ public class AIPlayer implements Runnable {
     private gameState gameBoard = null;
     private int queenIdentity;
     private Policy p;
-    private int maxDepth;
+    private final int maxDepth = 50;
+    private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
+    private final int iterativeDepth = 10;
 
-    public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l, int maxD) {
+    public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l) {
         this.gameHandler = handler;
         this.gameBoard = new gameState(curBoard);
         this.queenIdentity = queenId;
         this.p = new Policy(g,w,l);
-        this.maxDepth = maxD;
-        this.killers = new ArrayList<>(maxDepth);
+        this.killers = new ArrayList<>();
     }
 
     void initializeKillers () {
@@ -37,6 +38,7 @@ public class AIPlayer implements Runnable {
     public void run () {
         start = System.currentTimeMillis();
         initializeKillers();
+        currentMaxDepth = maxDepth;
         startMaxValue(gameBoard, 0, 0, 0);
     }
 
@@ -58,6 +60,10 @@ public class AIPlayer implements Runnable {
             //    return;   //killer move
             //}
             a = Math.max(v,a);
+        }
+        if (v < 0) {
+            currentMaxDepth+=iterativeDepth;
+            startMaxValue(s, a, b, depth);
         }
         extractMoveAndSend(currentBestMove);
     }
@@ -91,8 +97,7 @@ public class AIPlayer implements Runnable {
     }
 
     float minValue(gameState s, float a, float b, int depth) {
-        if (depth >= maxDepth) {
-            System.out.println("Depth hit");
+        if (depth >= currentMaxDepth) {
             return p.loss + p.general*depth;
         }
         float v = 10000000;
@@ -108,8 +113,7 @@ public class AIPlayer implements Runnable {
     }
 
     float maxValue(gameState s, float a, float b, int depth) {
-        if (depth >= maxDepth) {
-            System.out.println("Depth hit");
+        if (depth >= currentMaxDepth) {
             return p.loss + p.general*depth;
         }
         float v = -10000000;

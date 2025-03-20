@@ -25,7 +25,6 @@ public class COSC322Test extends GamePlayer{
 	private final float policyGeneral = 0.01f;
 	private final float policyWin = -1;
 	private final float policyLoss = 1;
-	private final int maxDepth = 150;
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
@@ -186,7 +185,7 @@ public class COSC322Test extends GamePlayer{
 				startHumanPlay();
 			} else {
 				if (ai == null) {
-					ai = new AIPlayer(this, gameState, queenIdentity, policyGeneral, policyWin, policyLoss, maxDepth);
+					ai = new AIPlayer(this, gameState, queenIdentity, policyGeneral, policyWin, policyLoss);
 				} else {
 					ai.setGameState(gameState);
 				}
