@@ -22,9 +22,9 @@ public class COSC322Test extends GamePlayer{
 	private boolean playing = false;
 	private AIPlayer ai = null;
 
-	private final float policyGeneral = 0;
-	private final float policyWin = -1;
-	private final float policyLoss = 1;
+	private final int policyGeneral = 0;
+	private final int policyWin = -1;
+	private final int policyLoss = 1;
 
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;

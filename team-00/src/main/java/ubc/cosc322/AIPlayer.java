@@ -9,15 +9,15 @@ public class AIPlayer implements Runnable {
     private gameState gameBoard = null;
     private int queenIdentity;
     private Policy p;
-    private final int maxDepth = 30;
+    private final int maxDepth = 100;
     private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 50;
+    private final int treeSearchThreshhold = 15;
 
-    public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l) {
+    public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, int g, int w, int l) {
         this.gameHandler = handler;
         this.gameBoard = new gameState(curBoard);
         this.queenIdentity = queenId;
@@ -43,8 +43,8 @@ public class AIPlayer implements Runnable {
         startMaxValue(gameBoard, 0, 0, 0);
     }
 
-    void startMaxValue(gameState s, float a, float b, int depth) {
-        float v = -10000000;
+    void startMaxValue(gameState s, int a, int b, int depth) {
+        int v = -10000000;
         gameState currentBestMove = null;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
         System.out.println(YoungOnes.size());
@@ -62,15 +62,15 @@ public class AIPlayer implements Runnable {
         } else {
             while (!YoungOnes.isEmpty()) {
                 gameState youngOne = YoungOnes.poll();
-                float i = minValue(youngOne,a,b,depth+1, s);
+                int i = minValue(youngOne,a,b,depth+1, s);
                 if (v < i) {
                     v = i;
                     currentBestMove = youngOne;
                 }
-                //if (v >= b) {
-                //    extractMoveAndSend(youngOne);
-                //    return;   //killer move
-                //}
+                if (v >= b) {
+                    extractMoveAndSend(youngOne);
+                    return;   //killer move
+                }
                 a = Math.max(v,a);
             }
             if (v < 0) {
@@ -109,11 +109,11 @@ public class AIPlayer implements Runnable {
         gameHandler.SendGameMessage(moves);
     }
 
-    float minValue(gameState s, float a, float b, int depth, gameState prev) {
+    int minValue(gameState s, int a, int b, int depth, gameState prev) {
         if (depth >= currentMaxDepth) {
             return p.loss + p.general*depth;
         }
-        float v = 10000000;
+        int v = 10000000;
         PriorityQueue<gameState> YoungOnes = generateStates(s, 3-queenIdentity, depth);
         if (YoungOnes.isEmpty()) return p.win + p.general*depth;
         while (!YoungOnes.isEmpty()) {
@@ -126,11 +126,11 @@ public class AIPlayer implements Runnable {
         return v;
     }
 
-    float maxValue(gameState s, float a, float b, int depth, gameState prev) {
+    int maxValue(gameState s, int a, int b, int depth, gameState prev) {
         if (depth >= currentMaxDepth) {
             return p.loss + p.general*depth;
         }
-        float v = -10000000;
+        int v = -10000000;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
         if (YoungOnes.isEmpty()) return p.loss + p.general*depth;
         while (!YoungOnes.isEmpty()) {
@@ -425,11 +425,11 @@ class gameState implements Comparable<gameState> {
 }
 
 class Policy {
-    public float general;
-    public float win;
-    public float loss;
+    public int general;
+    public int win;
+    public int loss;
 
-    Policy (float g, float w, float l) {
+    Policy (int g, int w, int l) {
         general = g;
         win = w;
         loss = l;
