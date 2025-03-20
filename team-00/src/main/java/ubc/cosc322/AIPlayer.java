@@ -15,7 +15,7 @@ public class AIPlayer implements Runnable {
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 15;
+    private final int treeSearchThreshhold = 1000;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, int g, int w, int l) {
         this.gameHandler = handler;
@@ -47,7 +47,11 @@ public class AIPlayer implements Runnable {
         int v = -10000000;
         gameState currentBestMove = null;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
-        System.out.println(YoungOnes.size());
+        if (YoungOnes.isEmpty()) {
+            System.out.println("You Lost");
+            return;
+        }
+        //System.out.println(YoungOnes.size());
         if (YoungOnes.size() >= treeSearchThreshhold) {
             gameState[] youngerOnes = new gameState[YoungOnes.size()];
             youngerOnes = YoungOnes.toArray(youngerOnes);
@@ -124,8 +128,8 @@ public class AIPlayer implements Runnable {
             if (compareStates(youngOne.getBoardState(), prev.getBoardState()) <= 0) continue;
             v = Math.min(v,maxValue(youngOne,a,b,depth+1, s));
             b = Math.min(v,b);
-            if (v <= a)  {
-                System.out.println("Pruned at: " + depth);
+            if (b <= a)  {
+                //System.out.println("Pruned at: " + depth);
                 return v;   //Anakin Skywalker pruning the young ones
             }
         }
@@ -147,8 +151,8 @@ public class AIPlayer implements Runnable {
             if (compareStates(youngOne.getBoardState(), prev.getBoardState()) <= 0) continue;
             v = Math.max(v,minValue(youngOne,a,b,depth+1, s));
             a = Math.max(v,a);
-            if (v >= b) {   //Anakin Skywalker pruning the young ones
-                System.out.println("Pruned at: " + depth);
+            if (a >= b) {   //Anakin Skywalker pruning the young ones
+                //System.out.println("Pruned at: " + depth);
                 if (killers.get(depth).size() >= killersSize) {
                     killers.get(depth).removeFirst();
                     killers.get(depth).add(youngOne.getBoardState());
