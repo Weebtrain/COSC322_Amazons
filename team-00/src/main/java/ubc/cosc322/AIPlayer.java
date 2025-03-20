@@ -115,13 +115,19 @@ public class AIPlayer implements Runnable {
         }
         int v = 10000000;
         PriorityQueue<gameState> YoungOnes = generateStates(s, 3-queenIdentity, depth);
-        if (YoungOnes.isEmpty()) return p.win + p.general*depth;
+        if (YoungOnes.isEmpty()) {
+            //System.out.println("End at: " + depth);
+            return p.win + p.general*depth;
+        }
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
             if (compareStates(youngOne.getBoardState(), prev.getBoardState()) <= 0) continue;
             v = Math.min(v,maxValue(youngOne,a,b,depth+1, s));
-            if (v <= a) return v;   //Anakin Skywalker pruning the young ones
             b = Math.min(v,b);
+            if (v <= a)  {
+                System.out.println("Pruned at: " + depth);
+                return v;   //Anakin Skywalker pruning the young ones
+            }
         }
         return v;
     }
@@ -132,12 +138,17 @@ public class AIPlayer implements Runnable {
         }
         int v = -10000000;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
-        if (YoungOnes.isEmpty()) return p.loss + p.general*depth;
+        if (YoungOnes.isEmpty()) {
+            //System.out.println("End at: " + depth);
+            return p.loss + p.general*depth;
+        }
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
             if (compareStates(youngOne.getBoardState(), prev.getBoardState()) <= 0) continue;
             v = Math.max(v,minValue(youngOne,a,b,depth+1, s));
+            a = Math.max(v,a);
             if (v >= b) {   //Anakin Skywalker pruning the young ones
+                System.out.println("Pruned at: " + depth);
                 if (killers.get(depth).size() >= killersSize) {
                     killers.get(depth).removeFirst();
                     killers.get(depth).add(youngOne.getBoardState());
@@ -146,7 +157,6 @@ public class AIPlayer implements Runnable {
                 }
                 return v;   //killer move
             }
-            a = Math.max(v,a);
         }
         return v;
     }
