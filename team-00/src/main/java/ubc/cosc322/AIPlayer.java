@@ -73,10 +73,10 @@ public class AIPlayer implements Runnable {
                     currentBestMove = youngOne;
                 }
                 a = Math.max(v,a);
-                if (v >= b) {
+                /*if (v >= b) {
                     extractMoveAndSend(youngOne);
                     return;   //killer move
-                }
+                }*/
             }
             if (v < 0) {
                 currentMaxDepth+=iterativeDepth;
