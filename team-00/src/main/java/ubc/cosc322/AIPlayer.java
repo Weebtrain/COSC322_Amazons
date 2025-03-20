@@ -9,20 +9,21 @@ public class AIPlayer implements Runnable {
     private gameState gameBoard = null;
     private int queenIdentity;
     private Policy p;
+    private final int fullMaxDepth = 150;
     private final int maxDepth = 100;
     private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 1000;
+    private final int treeSearchThreshhold = 2000;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, int g, int w, int l) {
         this.gameHandler = handler;
         this.gameBoard = new gameState(curBoard);
         this.queenIdentity = queenId;
         this.p = new Policy(g,w,l);
-        this.killers = new ArrayList<>(250);
+        this.killers = new ArrayList<>(fullMaxDepth);
     }
 
     void initializeKillers () {
@@ -79,7 +80,21 @@ public class AIPlayer implements Runnable {
             }
             if (v < 0) {
                 currentMaxDepth+=iterativeDepth;
-                startMaxValue(s, a, b, depth);
+                if (currentMaxDepth >= fullMaxDepth) {
+                    YoungOnes = generateStates(s, queenIdentity, depth);
+                    gameState[] youngerOnes = new gameState[YoungOnes.size()];
+                    youngerOnes = YoungOnes.toArray(youngerOnes);
+                    YoungOnes.clear();
+                    for (int i = 0; i < youngerOnes.length; i++) {
+                        youngerOnes[i].setH(adjacentsHeuristic(youngerOnes[i].getBoardState(), Extras.FindQueens(youngerOnes[i].getBoardState(), queenIdentity), Extras.FindQueens(youngerOnes[i].getBoardState(), 3-queenIdentity)));
+                        YoungOnes.add(youngerOnes[i]);
+                    }
+                    gameState e = YoungOnes.poll();
+                    extractMoveAndSend(e);
+                } else {
+                    startMaxValue(s, a, b, depth);
+                }
+                return;
             }
             extractMoveAndSend(currentBestMove);
         }
