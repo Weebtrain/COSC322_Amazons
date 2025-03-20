@@ -52,7 +52,7 @@ public class AIPlayer implements Runnable {
             try {
                 Thread.sleep(10);
             } catch (Exception e) {
-                
+
             }
             gameState[] youngerOnes = new gameState[YoungOnes.size()];
             youngerOnes = YoungOnes.toArray(youngerOnes);
@@ -93,15 +93,15 @@ public class AIPlayer implements Runnable {
         byte[][] moves = new byte[3][2];
         for (int i = 0; i<10; i++) {
 			for (int j = 0; j<10; j++) {
-				if (gameBoard.getBoardState()[i][j] == queenIdentity && move.getBoardState()[i][j] == 0) {
+				if (gameBoard.getBoardState()[i][j] == queenIdentity && move.getBoardState()[i][j] != queenIdentity) {
                     moves[0][0] = (byte)(i+1);
                     moves[0][1] = (byte)(j+1);
                 }
-                if (move.getBoardState()[i][j] == queenIdentity && gameBoard.getBoardState()[i][j] == 0) {
+                if (move.getBoardState()[i][j] == queenIdentity && gameBoard.getBoardState()[i][j] != queenIdentity) {
                     moves[1][0] = (byte)(i+1);
                     moves[1][1] = (byte)(j+1);
                 }
-                if (move.getBoardState()[i][j] == 3 && gameBoard.getBoardState()[i][j] == 0) {
+                if (move.getBoardState()[i][j] == 3 && gameBoard.getBoardState()[i][j] != 3) {
                     moves[2][0] = (byte)(i+1);
                     moves[2][1] = (byte)(j+1);
                 }
