@@ -35,6 +35,7 @@ public class Extras {
 			}
 			System.out.println();
 		}
+        System.out.println();
 	}
 
     public static byte[][] cloneMatrix (byte[][] s) {

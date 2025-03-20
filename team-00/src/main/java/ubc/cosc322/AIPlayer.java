@@ -9,12 +9,13 @@ public class AIPlayer implements Runnable {
     private gameState gameBoard = null;
     private int queenIdentity;
     private Policy p;
-    private final int maxDepth = 50;
+    private final int maxDepth = 40;
     private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
+    private final int treeSearchThreshhold = 1200;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l) {
         this.gameHandler = handler;
@@ -47,25 +48,38 @@ public class AIPlayer implements Runnable {
         gameState currentBestMove = null;
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
         System.out.println(YoungOnes.size());
-        while (!YoungOnes.isEmpty()) {
-            System.out.println("Time Running: " + (System.currentTimeMillis() - start)/1000);
-            gameState youngOne = YoungOnes.poll();
-            float i = minValue(youngOne,a,b,depth+1);
-            if (v < i) {
-                v = i;
-                currentBestMove = youngOne;
+        if (YoungOnes.size() >= treeSearchThreshhold) {
+            gameState[] youngerOnes = new gameState[YoungOnes.size()];
+            youngerOnes = YoungOnes.toArray(youngerOnes);
+            YoungOnes.clear();
+            for (int i = 0; i < youngerOnes.length; i++) {
+                youngerOnes[i].setH(adjacentsHeuristic(youngerOnes[i].getBoardState(), Extras.FindQueens(youngerOnes[i].getBoardState(), queenIdentity), Extras.FindQueens(youngerOnes[i].getBoardState(), 3-queenIdentity)));
+                YoungOnes.add(youngerOnes[i]);
             }
-            //if (v >= b) {
-            //    extractMoveAndSend(youngOne);
-            //    return;   //killer move
-            //}
-            a = Math.max(v,a);
+            gameState e = YoungOnes.poll();
+            System.out.println(e.getH());
+            extractMoveAndSend(e);
+        } else {
+            while (!YoungOnes.isEmpty()) {
+                System.out.println("Time Running: " + (System.currentTimeMillis() - start)/1000);
+                gameState youngOne = YoungOnes.poll();
+                float i = minValue(youngOne,a,b,depth+1);
+                if (v < i) {
+                    v = i;
+                    currentBestMove = youngOne;
+                }
+                //if (v >= b) {
+                //    extractMoveAndSend(youngOne);
+                //    return;   //killer move
+                //}
+                a = Math.max(v,a);
+            }
+            if (v < 0) {
+                currentMaxDepth+=iterativeDepth;
+                startMaxValue(s, a, b, depth);
+            }
+            extractMoveAndSend(currentBestMove);
         }
-        if (v < 0) {
-            currentMaxDepth+=iterativeDepth;
-            startMaxValue(s, a, b, depth);
-        }
-        extractMoveAndSend(currentBestMove);
     }
 
     void extractMoveAndSend (gameState move) {
@@ -90,7 +104,7 @@ public class AIPlayer implements Runnable {
 		}
         System.out.println(moves[0][0] + " " + moves[0][1]);
         System.out.println(moves[1][0] + " " + moves[1][1]);
-        System.out.println(moves[1][0] + " " + moves[1][1]);
+        System.out.println(moves[2][0] + " " + moves[2][1]);
         gameHandler.updateGameStateAI(moves, queenIdentity);
         System.out.println("Move made");
         gameHandler.SendGameMessage(moves);
@@ -106,7 +120,7 @@ public class AIPlayer implements Runnable {
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
             v = Math.min(v,maxValue(youngOne,a,b,depth+1));
-            if (v <= a) return v;
+            if (v <= a) return v;   //Anakin Skywalker pruning the young ones
             b = Math.min(v,b);
         }
         return v;
@@ -122,7 +136,7 @@ public class AIPlayer implements Runnable {
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
             v = Math.max(v,minValue(youngOne,a,b,depth+1));
-            if (v >= b) {
+            if (v >= b) {   //Anakin Skywalker pruning the young ones
                 if (killers.get(depth).size() >= killersSize) {
                     killers.removeFirst();
                     killers.get(depth).add(youngOne.getBoardState());
@@ -148,7 +162,101 @@ public class AIPlayer implements Runnable {
             }
         }
 
-        return (short)Arrays.stream((int[])similarity).max().getAsInt();
+        return (short)(-1*Arrays.stream((int[])similarity).max().getAsInt());
+    }
+
+    short adjacentsHeuristic (byte[][] s, byte[][] queenPositions, byte[][] enemyQueenPositions) {
+        short adjacents = 0;
+
+        //our queens
+        for (int i = 0; i<4; i++) {
+            if (queenPositions[i][0] < 9) {
+                if (s[queenPositions[i][0]+1][queenPositions[i][1]] != 0) {
+                    adjacents++;
+                }
+                if (queenPositions[i][1] < 9) {
+                    if (s[queenPositions[i][0]+1][queenPositions[i][1]+1] != 0) {
+                        adjacents++;
+                    }
+                }
+            }
+            if (queenPositions[i][1] < 9) {
+                if (s[queenPositions[i][0]][queenPositions[i][1]+1] != 0) {
+                    adjacents++;
+                }
+                if (queenPositions[i][0] > 0) {
+                    if (s[queenPositions[i][0]-1][queenPositions[i][1]+1] != 0) {
+                        adjacents++;
+                    }
+                }
+            }
+            if (queenPositions[i][0] > 0) {
+                if (s[queenPositions[i][0]-1][queenPositions[i][1]] != 0) {
+                    adjacents++;
+                }
+                if (queenPositions[i][1] > 0) {
+                    if (s[queenPositions[i][0]-1][queenPositions[i][1]-1] != 0) {
+                        adjacents++;
+                    }
+                }
+            }
+            if (queenPositions[i][1] > 0) {
+                if (s[queenPositions[i][0]][queenPositions[i][1]-1] != 0) {
+                    adjacents++;
+                }
+                if (queenPositions[i][0] < 9) {
+                    if (s[queenPositions[i][0]+1][queenPositions[i][1]-1] != 0) {
+                        adjacents++;
+                    }
+                }
+            }
+        }
+
+        //enemy queens
+        for (int i = 0; i<4; i++) {
+            if (enemyQueenPositions[i][0] < 9) {
+                if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]] != 0) {
+                    adjacents--;
+                }
+                if (enemyQueenPositions[i][1] < 9) {
+                    if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]+1] != 0) {
+                        adjacents--;
+                    }
+                }
+            }
+            if (enemyQueenPositions[i][1] < 9) {
+                if (s[enemyQueenPositions[i][0]][enemyQueenPositions[i][1]+1] != 0) {
+                    adjacents--;
+                }
+                if (enemyQueenPositions[i][0] > 0) {
+                    if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]+1] != 0) {
+                        adjacents--;
+                    }
+                }
+            }
+            if (enemyQueenPositions[i][0] > 0) {
+                if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]] != 0) {
+                    adjacents--;
+                }
+                if (enemyQueenPositions[i][1] > 0) {
+                    if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]-1] != 0) {
+                        adjacents--;
+                    }
+                }
+            }
+            if (enemyQueenPositions[i][1] > 0) {
+                if (s[enemyQueenPositions[i][0]][enemyQueenPositions[i][1]-1] != 0) {
+                    adjacents--;
+                }
+                if (enemyQueenPositions[i][0] < 9) {
+                    if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]-1] != 0) {
+                        adjacents--;
+                    }
+                }
+            }
+        }
+
+        return (short)(adjacents);
     }
 
     PriorityQueue<gameState> generateStates (gameState s, int queenId, int depth) {
@@ -277,6 +385,7 @@ class gameState implements Comparable<gameState> {
     byte[][] boardState;
     short h = 0;
 
+    public gameState () {};
     public gameState (byte[][] state) {
         this.boardState = state;
     }
@@ -291,6 +400,9 @@ class gameState implements Comparable<gameState> {
 
     public short getH () {
         return h;
+    }
+    public void setH (short H) {
+        this.h = H;
     }
 
     @Override
