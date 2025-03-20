@@ -2,17 +2,14 @@ package ubc.cosc322;
 
 import java.util.Scanner;
 
-import ygraph.ai.smartfox.games.GameClient;
-
 public class HumanPlayer implements Runnable{
     private COSC322Test gameHandler = null;
-    private GameClient gameClient = null;
-    private int[][] gameBoard = null;
+    private byte[][] gameBoard = null;
     private int queenIdentity;
 
-    HumanPlayer (COSC322Test handler, GameClient client, int[][] curBoard, int queenId) {
+    HumanPlayer (COSC322Test handler, byte[][] curBoard, int queenId) {
         this.gameHandler = handler;
-        this.gameClient = client;
+
         this.gameBoard = curBoard;
         this.queenIdentity = queenId;
     }
@@ -21,16 +18,16 @@ public class HumanPlayer implements Runnable{
     public void run() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         String move;
-        int[][] moveInt = null;
+        byte[][] moveInt = null;
         do {
             System.out.print("\nEnter move: ");
             move = myObj.nextLine();  // Read user input
             move = move.toLowerCase();
             moveInt = checkMove(move);  //Check move returns null if move isn't valid for syntax reasons or if the move itself isn't valid
         } while (moveInt == null);
-        gameHandler.updateGameState(moveInt, queenIdentity);
+        gameHandler.updateGameStateHuman(moveInt, queenIdentity);
 
-        gameClient.sendMoveMessage(Extras.arrayToArrayList(moveInt[0]), Extras.arrayToArrayList(moveInt[1]), Extras.arrayToArrayList(moveInt[2]));
+        gameHandler.SendGameMessage(moveInt);
     }
 
     boolean checkStringSyntax (String moveString) { //L##L##L##
@@ -66,9 +63,9 @@ public class HumanPlayer implements Runnable{
     }
 
 
-    int[][] convertToMove (String moveString) {
+    byte[][] convertToMove (String moveString) {
         char[] moveCharArray = moveString.toCharArray();
-        int[][] arrayOfMoveStatements = new int[3][2];
+        byte[][] arrayOfMoveStatements = new byte[3][2];
         String locations;
         int start = 0, end = 1;
         for (int i = 0; i<3;i++) {
@@ -76,33 +73,33 @@ public class HumanPlayer implements Runnable{
                 end++;
             }
             locations = moveString.substring(start, end);
-            arrayOfMoveStatements[i][1] = (int)(locations.charAt(0) - 'a') + 1;
-            arrayOfMoveStatements[i][0] = Integer.parseInt(locations.substring(1));
+            arrayOfMoveStatements[i][1] = (byte)((int)(locations.charAt(0) - 'a') + 1);
+            arrayOfMoveStatements[i][0] = (byte)Integer.parseInt(locations.substring(1));
             start = end;
             end++;
         }
         return arrayOfMoveStatements;
     }
 
-    int[][] checkMove (String moveString) {
+    byte[][] checkMove (String moveString) {
         if (!(checkStringSyntax(moveString))) { //checks if string syntax is correct
             return null;
         }
-        int[][] tempMoves = convertToMove(moveString);  //converts string into integer arrays of x and y positions
+        byte[][] tempMoves = convertToMove(moveString);  //converts string into integer arrays of x and y positions
         if (!(checkMoveValidity(tempMoves))) {  //checks if moves are valid (queen selection, queen move and arrow fire)
             return null;
         }
         return tempMoves;
     }
 
-    boolean checkMoveValidity (int[][] moves) {
+    boolean checkMoveValidity (byte[][] moves) {
         if(!ensureQueenPosition(moves[0])) return false;    //Checks your queen is selected
         if(!ensureValidDirection(moves[0], moves[1])) return false; //checks the queen can move there
         if(!ensureValidDirection(moves[1], moves[2])) return false; //checks the queen can shoot from move
         return true;
     }
 
-    boolean ensureValidDirection (int[] start, int[] end) {
+    boolean ensureValidDirection (byte[] start, byte[] end) {
         if (start.equals(end) || gameBoard[end[0]-1][end[1]-1] == 3) {
             return false;
         } else if (start[0] == end[0]) {
@@ -135,7 +132,7 @@ public class HumanPlayer implements Runnable{
         return false;
     }
 
-    boolean ensureQueenPosition (int[] position) {
+    boolean ensureQueenPosition (byte[] position) {
         return gameBoard[position[0] - 1][position[1] - 1] == queenIdentity;
     }
 }
