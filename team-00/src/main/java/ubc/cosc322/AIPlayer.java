@@ -14,9 +14,9 @@ public class AIPlayer implements Runnable {
     private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
-    private final int killersSize = 2;
+    private final int killersSize = 4;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 2000;
+    private final int treeSearchThreshhold = 2500;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, int g, int w, int l) {
         this.gameHandler = handler;
