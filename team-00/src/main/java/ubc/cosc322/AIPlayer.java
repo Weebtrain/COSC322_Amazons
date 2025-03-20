@@ -49,7 +49,11 @@ public class AIPlayer implements Runnable {
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
         System.out.println(YoungOnes.size());
         if (YoungOnes.size() >= treeSearchThreshhold) {
-            Thread.sleep(10);
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                
+            }
             gameState[] youngerOnes = new gameState[YoungOnes.size()];
             youngerOnes = YoungOnes.toArray(youngerOnes);
             YoungOnes.clear();
