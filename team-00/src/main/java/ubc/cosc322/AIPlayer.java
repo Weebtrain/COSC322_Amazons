@@ -49,11 +49,6 @@ public class AIPlayer implements Runnable {
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
         System.out.println(YoungOnes.size());
         if (YoungOnes.size() >= treeSearchThreshhold) {
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-
-            }
             gameState[] youngerOnes = new gameState[YoungOnes.size()];
             youngerOnes = YoungOnes.toArray(youngerOnes);
             YoungOnes.clear();
@@ -220,41 +215,41 @@ public class AIPlayer implements Runnable {
         //enemy queens
         for (int i = 0; i<4; i++) {
             if (enemyQueenPositions[i][0] < 9) {
-                if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]] != 0) {
+                if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]] == 3) {
                     adjacents--;
                 }
                 if (enemyQueenPositions[i][1] < 9) {
-                    if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]+1] != 0) {
+                    if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]+1] == 3) {
                         adjacents--;
                     }
                 }
             }
             if (enemyQueenPositions[i][1] < 9) {
-                if (s[enemyQueenPositions[i][0]][enemyQueenPositions[i][1]+1] != 0) {
+                if (s[enemyQueenPositions[i][0]][enemyQueenPositions[i][1]+1] == 3) {
                     adjacents--;
                 }
                 if (enemyQueenPositions[i][0] > 0) {
-                    if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]+1] != 0) {
+                    if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]+1] == 3) {
                         adjacents--;
                     }
                 }
             }
             if (enemyQueenPositions[i][0] > 0) {
-                if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]] != 0) {
+                if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]] == 3) {
                     adjacents--;
                 }
                 if (enemyQueenPositions[i][1] > 0) {
-                    if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]-1] != 0) {
+                    if (s[enemyQueenPositions[i][0]-1][enemyQueenPositions[i][1]-1] == 3) {
                         adjacents--;
                     }
                 }
             }
             if (enemyQueenPositions[i][1] > 0) {
-                if (s[enemyQueenPositions[i][0]][enemyQueenPositions[i][1]-1] != 0) {
+                if (s[enemyQueenPositions[i][0]][enemyQueenPositions[i][1]-1] == 3) {
                     adjacents--;
                 }
                 if (enemyQueenPositions[i][0] < 9) {
-                    if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]-1] != 0) {
+                    if (s[enemyQueenPositions[i][0]+1][enemyQueenPositions[i][1]-1] == 3) {
                         adjacents--;
                     }
                 }
