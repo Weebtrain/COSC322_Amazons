@@ -15,7 +15,7 @@ public class AIPlayer implements Runnable {
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 200;
+    private final int treeSearchThreshhold = 80;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l) {
         this.gameHandler = handler;
@@ -105,6 +105,9 @@ public class AIPlayer implements Runnable {
         System.out.println(moves[0][0] + " " + moves[0][1]);
         System.out.println(moves[1][0] + " " + moves[1][1]);
         System.out.println(moves[2][0] + " " + moves[2][1]);
+        if (moves[0][0] == moves[1][0] && moves[0][1] == moves[1][1]) {
+            System.out.println("Caught in 4k");
+        }
         gameHandler.updateGameStateAI(moves, queenIdentity);
         System.out.println("Move made");
         gameHandler.SendGameMessage(moves);
