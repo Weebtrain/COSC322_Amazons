@@ -39,7 +39,7 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
+    	COSC322Test player = new COSC322Test("WeebTrain2", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
@@ -146,11 +146,11 @@ public class COSC322Test extends GamePlayer{
 		gamegui.updateGameState(msgDetails);
 
 		ArrayList<Integer> move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
-		gameState[9-move.get(0)-1][move.get(1)-1] = 0;
+		gameState[9-(move.get(0)-1)][move.get(1)-1] = 0;
 		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
-		gameState[9-move.get(0)-1][move.get(1)-1] = (byte)queenNum;
+		gameState[9-(move.get(0)-1)][move.get(1)-1] = (byte)queenNum;
 		move = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
-		gameState[9-move.get(0)-1][move.get(1)-1] = 3;
+		gameState[9-(move.get(0)-1)][move.get(1)-1] = 3;
 		//displayGameStateArray();
 	}
 	public void updateGameStateHuman (byte[][] moveMade, int queenNum) {
