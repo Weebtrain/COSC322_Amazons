@@ -9,13 +9,13 @@ public class AIPlayer implements Runnable {
     private gameState gameBoard = null;
     private int queenIdentity;
     private Policy p;
-    private final int maxDepth = 15;
+    private final int maxDepth = 30;
     private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 70;
+    private final int treeSearchThreshhold = 50;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l) {
         this.gameHandler = handler;
@@ -62,7 +62,7 @@ public class AIPlayer implements Runnable {
         } else {
             while (!YoungOnes.isEmpty()) {
                 gameState youngOne = YoungOnes.poll();
-                float i = minValue(youngOne,a,b,depth+1);
+                float i = minValue(youngOne,a,b,depth+1, s);
                 if (v < i) {
                     v = i;
                     currentBestMove = youngOne;
@@ -109,7 +109,7 @@ public class AIPlayer implements Runnable {
         gameHandler.SendGameMessage(moves);
     }
 
-    float minValue(gameState s, float a, float b, int depth) {
+    float minValue(gameState s, float a, float b, int depth, gameState prev) {
         if (depth >= currentMaxDepth) {
             return p.loss + p.general*depth;
         }
@@ -118,14 +118,15 @@ public class AIPlayer implements Runnable {
         if (YoungOnes.isEmpty()) return p.win + p.general*depth;
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
-            v = Math.min(v,maxValue(youngOne,a,b,depth+1));
+            if (compareStates(youngOne.getBoardState(), prev.getBoardState()) <= 0) continue;
+            v = Math.min(v,maxValue(youngOne,a,b,depth+1, s));
             if (v <= a) return v;   //Anakin Skywalker pruning the young ones
             b = Math.min(v,b);
         }
         return v;
     }
 
-    float maxValue(gameState s, float a, float b, int depth) {
+    float maxValue(gameState s, float a, float b, int depth, gameState prev) {
         if (depth >= currentMaxDepth) {
             return p.loss + p.general*depth;
         }
@@ -134,7 +135,8 @@ public class AIPlayer implements Runnable {
         if (YoungOnes.isEmpty()) return p.loss + p.general*depth;
         while (!YoungOnes.isEmpty()) {
             gameState youngOne = YoungOnes.poll();
-            v = Math.max(v,minValue(youngOne,a,b,depth+1));
+            if (compareStates(youngOne.getBoardState(), prev.getBoardState()) <= 0) continue;
+            v = Math.max(v,minValue(youngOne,a,b,depth+1, s));
             if (v >= b) {   //Anakin Skywalker pruning the young ones
                 if (killers.get(depth).size() >= killersSize) {
                     killers.get(depth).removeFirst();
@@ -162,6 +164,18 @@ public class AIPlayer implements Runnable {
         }
 
         return (short)(-1*Arrays.stream((int[])similarity).max().getAsInt());
+    }
+
+    int compareStates (byte[][] s, byte[][] e) {
+        int similarity = 100;
+
+        for (int i = 0; i<10; i++) {
+            for (int j = 0; j<10; j++) {
+                if (s[i][j] == e[i][j]) similarity--; 
+            }
+        }
+
+        return similarity;
     }
 
     short adjacentsHeuristic (byte[][] s, byte[][] queenPositions, byte[][] enemyQueenPositions) {

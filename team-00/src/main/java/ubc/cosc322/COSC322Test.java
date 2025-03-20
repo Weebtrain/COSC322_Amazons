@@ -22,7 +22,7 @@ public class COSC322Test extends GamePlayer{
 	private boolean playing = false;
 	private AIPlayer ai = null;
 
-	private final float policyGeneral = 0.01f;
+	private final float policyGeneral = 0;
 	private final float policyWin = -1;
 	private final float policyLoss = 1;
 
@@ -39,7 +39,7 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test("WeebTrain2", "COSC322");	//Username display in server, password into server
+    	COSC322Test player = new COSC322Test("WeebTrain", "COSC322");	//Username display in server, password into server
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
