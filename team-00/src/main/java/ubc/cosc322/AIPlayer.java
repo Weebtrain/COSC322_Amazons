@@ -15,7 +15,7 @@ public class AIPlayer implements Runnable {
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 2;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 700;
+    private final int treeSearchThreshhold = 200;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, float g, float w, float l) {
         this.gameHandler = handler;
@@ -49,6 +49,7 @@ public class AIPlayer implements Runnable {
         PriorityQueue<gameState> YoungOnes = generateStates(s, queenIdentity, depth);
         System.out.println(YoungOnes.size());
         if (YoungOnes.size() >= treeSearchThreshhold) {
+            Thread.sleep(10);
             gameState[] youngerOnes = new gameState[YoungOnes.size()];
             youngerOnes = YoungOnes.toArray(youngerOnes);
             YoungOnes.clear();
