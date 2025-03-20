@@ -9,7 +9,7 @@ public class AIPlayer implements Runnable {
     private gameState gameBoard = null;
     private int queenIdentity;
     private Policy p;
-    private final int maxDepth = 40;
+    private final int maxDepth = 15;
     private int currentMaxDepth;
     private long start;
     private ArrayList<ArrayList<byte[][]>> killers;
@@ -137,7 +137,7 @@ public class AIPlayer implements Runnable {
             v = Math.max(v,minValue(youngOne,a,b,depth+1));
             if (v >= b) {   //Anakin Skywalker pruning the young ones
                 if (killers.get(depth).size() >= killersSize) {
-                    killers.removeFirst();
+                    killers.get(depth).removeFirst();
                     killers.get(depth).add(youngOne.getBoardState());
                 } else {
                     killers.get(depth).add(youngOne.getBoardState());
