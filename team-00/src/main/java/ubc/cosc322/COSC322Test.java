@@ -23,7 +23,7 @@ public class COSC322Test extends GamePlayer{
 	private AIPlayer ai = null;
 
 	private final int policyGeneral = 1;
-	private final int policyWin = -100;
+	private final int policyWin = 100;
 	private final int policyLoss = 100;
 
     private GameClient gameClient = null; 

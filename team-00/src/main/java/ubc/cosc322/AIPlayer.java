@@ -101,8 +101,8 @@ public class AIPlayer implements Runnable {
     }
 
     void extractMoveAndSend (gameState move) {
-        Extras.displayGameStateArray(move.getBoardState());
-        Extras.displayGameStateArray(gameBoard.getBoardState());
+        //Extras.displayGameStateArray(move.getBoardState());
+        //Extras.displayGameStateArray(gameBoard.getBoardState());
         byte[][] moves = new byte[3][2];
         for (int i = 0; i<10; i++) {
 			for (int j = 0; j<10; j++) {
@@ -120,11 +120,11 @@ public class AIPlayer implements Runnable {
                 }
 			}
 		}
-        System.out.println(moves[0][0] + " " + moves[0][1]);
-        System.out.println(moves[1][0] + " " + moves[1][1]);
-        System.out.println(moves[2][0] + " " + moves[2][1]);
+        //System.out.println(moves[0][0] + " " + moves[0][1]);
+        //System.out.println(moves[1][0] + " " + moves[1][1]);
+        //System.out.println(moves[2][0] + " " + moves[2][1]);
         gameHandler.updateGameStateAI(moves, queenIdentity);
-        System.out.println("Move made");
+        //System.out.println("Move made");
         gameHandler.SendGameMessage(moves);
     }
 
