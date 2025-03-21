@@ -16,7 +16,7 @@ public class AIPlayer implements Runnable {
     private ArrayList<ArrayList<byte[][]>> killers;
     private final int killersSize = 4;
     private final int iterativeDepth = 10;
-    private final int treeSearchThreshhold = 2000;
+    private final int treeSearchThreshhold = 1800;
 
     public AIPlayer (COSC322Test handler, byte[][] curBoard, int queenId, int g, int w, int l) {
         this.gameHandler = handler;
@@ -70,6 +70,8 @@ public class AIPlayer implements Runnable {
                 int i = minValue(youngOne,a,b,depth+1, s);
                 if (v < i) {
                     v = i;
+                    currentBestMove = youngOne;
+                } else if (v == i && Math.random() <= 0.5) {
                     currentBestMove = youngOne;
                 }
                 a = Math.max(v,a);
